@@ -1,22 +1,17 @@
 package com.example.javafxtest;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 import javafx.event.ActionEvent;//for swapping scenes
 import javafx.scene.Node;
-
+import javafx.beans.property.*;
+import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
 
 public class HelloController {
-    @FXML
-    private Label welcomeText;
-
 
     @FXML
     protected void onButtonClickPVB(ActionEvent event) {
@@ -24,16 +19,15 @@ public class HelloController {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("player_vs_bot_start.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
 
-            // 1. Get the current Stage
+            //linking style sheet
+            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+            //load and show stage
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            //make new scene
             stage.setScene(scene);
-
-            //force it to be fullscreen (for board)
             stage.setFullScreen(true);
-
             stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,18 +39,49 @@ public class HelloController {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("player_vs_player_start.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
 
+
+            //load and show stage
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
             stage.setScene(scene);
-
             stage.setFullScreen(true);
-
             stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
+    @FXML
+    private GridPane gameBoard;
 
-}//end of hellocontroller class
+    private String[][] boardLogic = new String[11][11];
+
+    @FXML
+    public void initialize() {
+        // Only build the board if we are actually on the board screen
+        if (gameBoard != null) {
+            createBoard();
+        }
+
+    }
+
+    private void createBoard() {
+        for (int row = 0; row < 11; row++) {
+            for (int col = 0; col < 11; col++) {
+
+                //each tile is a button
+                Button tile = new Button();
+                tile.setPrefSize(70, 70);
+
+                //turn this into a class (for consistency)
+                tile.getStyleClass().add("board-tile");
+
+                //Add to GridPane
+                gameBoard.add(tile, col, row);
+            }
+        }
+    }
+
+
+}//end of class

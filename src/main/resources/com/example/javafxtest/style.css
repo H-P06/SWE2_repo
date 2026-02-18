@@ -21,3 +21,15 @@
 .button:hover {
     -fx-background-color: #4a4a4a;
 }
+
+/*new css for board*/
+.board-tile {
+    -fx-shape: "M 30,0 H 70 L 100,30 V 70 L 70,100 H 30 L 0,70 V 30 Z";
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+.board-tile:hover {
+    -fx-background-color: #eeeeee;
+    -fx-border-color: #eeeeee;
+}

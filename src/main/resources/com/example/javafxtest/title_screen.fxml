@@ -13,7 +13,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label fx:id="welcomeText"/>
+    <!-- buttons on title screen and the title itself-->
     <Label text="Quax Software System" styleClass="title" />
     <Button text="Player vs Bot" onAction="#onButtonClickPVB"/>
     <Button text="Player vs Player" onAction="#onButtonClickPVP"/>

@@ -1,5 +1,4 @@
 package com.example.javafxtest;
-
 import javafx.application.Application;
 
 public class Launcher {
