@@ -11,7 +11,7 @@
 
 
 <!--    <Label text="Player vs Bot" styleClass="playerVsBot" />-->
-    <Label fx:id="playerToPlay" visible="false" styleClass="playerToPlay" />
+    <Label fx:id="playerToPlay" visible="true" text="Player to move" styleClass="playerToPlay" />
     <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
     </GridPane>
 
