@@ -67,3 +67,9 @@
     -fx-border-color: #000000;
 }
 
+
+.playerToPlay{
+    -fx-font-family: "Comic Sans MS";
+    -fx-font-size: 30pt;
+    -fx-text-fill: #725031;
+}

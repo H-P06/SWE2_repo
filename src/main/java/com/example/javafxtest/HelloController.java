@@ -4,6 +4,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -18,9 +19,10 @@ import javafx.util.Duration;
 public class HelloController {
 
     private int totalNumberMoves;
-
-    // Inside your Controller class
     private Timeline exitTimeline;
+
+
+    public static int gameMode = -1;  //1 for PvB 2 for PvP
 
     @FXML
     public void initialize() {
@@ -65,7 +67,8 @@ public class HelloController {
     @FXML
     protected void onButtonClickPVB(ActionEvent event) {
         try {
-
+            //set the gamemode to playervsbot
+            gameMode = 1;
             //keep the current dimensions of the stage when switching
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             double currentWidth = stage.getWidth();
@@ -94,6 +97,7 @@ public class HelloController {
     @FXML
     protected void onButtonClickPVP(ActionEvent event) {
         try {
+            gameMode = 2;
 
             //keep the current dimensions of the stage when switching
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -177,6 +181,9 @@ public class HelloController {
 
     }
 
+    //needed for the label
+    @FXML private Label playerToPlay;
+
     @FXML
     private void handleMove(int row, int col, Button clickedButton) {
         if(boardLogic[row][col] == null){   //for empty spot
@@ -185,21 +192,44 @@ public class HelloController {
             //white is o, black is x
             //meaning it's even (white should play)
             if(totalNumberMoves % 2 == 0){
+                if(gameMode == 1){
+                    playerToPlay.setManaged(true);
+                    playerToPlay.setVisible(true);
+                    playerToPlay.setText("Player to play");
+                }
+                if(gameMode == 2){
+                    playerToPlay.setManaged(true);
+                    playerToPlay.setVisible(true);
+                    playerToPlay.setText("Black to play");
+                }
+
                 boardLogic[row][col] = "O";
                     clickedButton.getStyleClass().removeAll("whiteButtonPressed, focus");
                     //In this way you're sure you have no styles applied to your object button
                     clickedButton.getStyleClass().add("whiteButtonPressed");
                     //then you specify the class you would give to the button
+                System.out.println("White placed in " + row + " " + col + " gamemode: " + gameMode);   //for us to see it worked
 
-                System.out.println("White placed in " + row + " " + col);   //for us to see it worked
             }
             else{
+                if(gameMode == 1){
+                    playerToPlay.setManaged(true);
+                    playerToPlay.setVisible(true);
+                    playerToPlay.setText("Bot to play");
+                }
+                if(gameMode == 2){
+                    playerToPlay.setManaged(true);
+                    playerToPlay.setVisible(true);
+                    playerToPlay.setText("White to play");
+                }
+
                 boardLogic[row][col] = "X";
                     clickedButton.getStyleClass().removeAll("blackButtonPressed, focus");
                     //In this way you're sure you have no styles applied to your object button
                     clickedButton.getStyleClass().add("blackButtonPressed");
                     //then you specify the class you would give to the button
-                System.out.println("Black placed in " + row + " " + col);   //for us to see it worked
+                System.out.println("Black placed in " + row + " " + col + " gamemode: " + gameMode);   //for us to see it worked
+
             }
         }
         else{

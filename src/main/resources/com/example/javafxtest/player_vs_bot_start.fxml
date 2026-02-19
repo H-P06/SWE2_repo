@@ -10,10 +10,12 @@
 
 
 
-    <Label text="Player vs Bot" styleClass="playerVsBot" />
+<!--    <Label text="Player vs Bot" styleClass="playerVsBot" />-->
+    <Label fx:id="playerToPlay" visible="false" styleClass="playerToPlay" />
     <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
     </GridPane>
 
-    <Label text="Player to play" styleClass="whoToPlay" />
+
+<!--    <Label fx:id="playerToPlay" text="Player to play" visible="false" styleClass="playerToPlay" />-->
 
 </VBox>
