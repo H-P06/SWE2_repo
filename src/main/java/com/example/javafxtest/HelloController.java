@@ -13,6 +13,8 @@ import javafx.scene.layout.GridPane;
 
 public class HelloController {
 
+    private int numberMoves;
+
     @FXML
     protected void onButtonClickPVB(ActionEvent event) {
         try {
@@ -54,6 +56,7 @@ public class HelloController {
 
     @FXML
     private GridPane gameBoard;
+    public int numberMove = 0;
 
     private String[][] boardLogic = new String[11][11];
 
@@ -77,9 +80,19 @@ public class HelloController {
                 //turn this into a class (for consistency)
                 tile.getStyleClass().add("board-tile");
 
+
                 //Add to GridPane
                 gameBoard.add(tile, col, row);
             }
+        }
+    }
+
+    @FXML
+    private void handleMove(int row, int col, Button clickedButton) {
+        if(boardLogic[row][col] == null){   //for empty spot
+            numberMoves++;
+            boardLogic[row][col] = "X";
+            System.out.println("Black placed in " + row + " " + col);   //for us to see it worked
         }
     }
 

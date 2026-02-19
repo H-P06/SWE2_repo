@@ -33,3 +33,16 @@
     -fx-background-color: #eeeeee;
     -fx-border-color: #eeeeee;
 }
+
+.board-tile:pressed {
+    -fx-background-color: #dcdcdc;
+    -fx-border-color: #dcdcdc ;
+}
+
+
+/*This should keep the colour*/
+.button-tile:focused{
+    -fx-background-color: #000000;
+}
+
+
