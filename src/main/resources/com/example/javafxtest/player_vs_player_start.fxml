@@ -3,13 +3,18 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.javafxtest.HelloController"
-            prefHeight="240.0" prefWidth="320.0">
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
 
-    <children>
-        <Label layoutX="0" layoutY="0" text="Welcome to the player vs player window!" />
-    </children>
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.javafxtest.HelloController">
 
-</AnchorPane>
+
+
+    <Label text="Player vs Player" styleClass="playerVsplayer" />
+    <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
+    </GridPane>
+
+    <Label text="Player to play" styleClass="whoToPlay" />
+
+</VBox>

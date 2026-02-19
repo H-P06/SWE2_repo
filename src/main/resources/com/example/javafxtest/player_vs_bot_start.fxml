@@ -8,9 +8,12 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.javafxtest.HelloController">
 
-    <Label text="Player vs Bot" styleClass="title" />
 
+
+    <Label text="Player vs Bot" styleClass="playerVsBot" />
     <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
     </GridPane>
+
+    <Label text="Player to play" styleClass="whoToPlay" />
 
 </VBox>
