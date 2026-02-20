@@ -1,23 +1,26 @@
 package com.example.javafxtest;
 
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-
-import javafx.event.ActionEvent;//for swapping scenes
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
@@ -25,41 +28,52 @@ import javafx.util.Duration;
 
 public class HelloController {
 
-    private int totalNumberMoves;
+    // Start at 0: first increment → 1 (odd → Black/X plays first)
+    private int totalNumberMoves = 0;
     private Timeline exitTimeline;
+    private long escapePressTime = 0;
+    private Map<String, Button> buttonMap = new HashMap<>();
 
-
-    public static int gameMode = -1;  //1 for PvB 2 for PvP
+    public static int gameMode = -1;  // 1 for PvB, 2 for PvP
 
     @FXML
     public void initialize() {
-        //make timer for exit 3 second feature
-        exitTimeline = new Timeline(new KeyFrame(Duration.seconds(3), event -> {
+        System.out.println("Fields ready - gameBoard: " + (gameBoard != null) +
+                ", root: " + (rootStackPane != null) +
+                ", label: " + (playerToPlay != null));
+
+        exitTimeline = new Timeline(
+                new KeyFrame(Duration.millis(100), event -> checkEscapeHold())
+        );
+        exitTimeline.setCycleCount(Timeline.INDEFINITE);
+
+        Platform.runLater(() -> {
+            if (gameBoard == null || rootStackPane == null) {
+                System.err.println("FATAL: FXML fields still null after delay! Check module-info.java or FXML path.");
+                return;
+            }
+            createBoard();
+        });
+    }
+
+    private void checkEscapeHold() {
+        if (System.currentTimeMillis() - escapePressTime >= 3000) {
+            exitTimeline.stop();
             try {
                 switchToTitleScreen();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }));
-        exitTimeline.setCycleCount(1);
-
-        //make board
-        if (gameBoard != null) {
-            createBoard();
         }
     }
 
     private void switchToTitleScreen() throws IOException {
         Stage stage = (Stage) gameBoard.getScene().getWindow();
-
-        // 1. Get the size of the CONTENT, not the whole window
         double currentWidth = stage.getScene().getWidth();
         double currentHeight = stage.getScene().getHeight();
         boolean wasMaximized = stage.isMaximized();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("title_screen.fxml"));
-
-        // 2. This now matches perfectly without adding border height
         Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
 
         if (getClass().getResource("style.css") != null) {
@@ -70,32 +84,22 @@ public class HelloController {
         stage.setMaximized(wasMaximized);
     }
 
-
     @FXML
     protected void onButtonClickPVB(ActionEvent event) {
         try {
-            //set the gamemode to playervsbot
             gameMode = 1;
-            //keep the current dimensions of the stage when switching
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             double currentWidth = stage.getWidth();
             double currentHeight = stage.getHeight();
             boolean wasMaximized = stage.isMaximized();
 
-            //load fxml
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("player_vs_bot_start.fxml"));
-
-            //amke the scene with the dimensions
             Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
-
-            //linking style.css
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
 
-
             stage.setScene(scene);
-
+            stage.setMaximized(wasMaximized);
             stage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,203 +109,147 @@ public class HelloController {
     protected void onButtonClickPVP(ActionEvent event) {
         try {
             gameMode = 2;
-
-            //keep the current dimensions of the stage when switching
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             double currentWidth = stage.getWidth();
             double currentHeight = stage.getHeight();
             boolean wasMaximized = stage.isMaximized();
 
-            //load fxml
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("player_vs_player_start.fxml"));
-
-            //amke the scene with the dimensions
             Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
-
-            //linking style.css
             scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-
             stage.setScene(scene);
-
+            stage.setMaximized(wasMaximized);
             stage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     @FXML
     private GridPane gameBoard;
     public int numberMove = 0;
 
-    private String[][] boardLogic = new String[11][11];
+    // boardLogic uses raw visual coordinates: octagons at (even,even), diamonds at (odd,odd)
+    private String[][] boardLogic = new String[22][22];
 
-
-    @FXML private StackPane rootStackPane; // No longer red!
+    @FXML private StackPane rootStackPane;
 
     private void createBoard() {
-// 1. Reset and Setup
+        totalNumberMoves = 0;
+        buttonMap.clear();
+        for (String[] row : boardLogic) Arrays.fill(row, null);
+
         gameBoard.getChildren().clear();
+        gameBoard.getColumnConstraints().clear();
+        gameBoard.getRowConstraints().clear();
         gameBoard.setAlignment(Pos.CENTER);
         gameBoard.setHgap(0);
         gameBoard.setVgap(0);
         gameBoard.setPadding(new javafx.geometry.Insets(20));
 
-        // 2. Build the 21x21 Mosaic
-        for (int row = 0; row < 21; row++) {
-            for (int col = 0; col < 21; col++) {
+        // Fix diamond columns/rows to 3px; octagons size themselves from their content
+        for (int col = 0; col < 21; col++) {
+            ColumnConstraints cc = new ColumnConstraints();
+            if (col % 2 == 1) { cc.setMinWidth(3); cc.setPrefWidth(3); cc.setMaxWidth(3); }
+            gameBoard.getColumnConstraints().add(cc);
+        }
+        for (int row = 0; row < 19; row++) {
+            RowConstraints rc = new RowConstraints();
+            if (row % 2 == 1) { rc.setMinHeight(3); rc.setPrefHeight(3); rc.setMaxHeight(3); }
+            gameBoard.getRowConstraints().add(rc);
+        }
 
-                // --- CASE 1: OCTAGONS (The Playable Tiles) ---
-                // These occupy Even Rows and Even Columns (0,0), (0,2), (2,0)...
-                if (row % 2 == 0 && col % 2 == 0) {
-                    Button tile = new Button();
-                    tile.getStyleClass().add("board-tile");
-
-                    // Responsive Size Binding
-                    tile.prefWidthProperty().bind(rootStackPane.heightProperty().divide(25));
-                    tile.prefHeightProperty().bind(rootStackPane.heightProperty().divide(25));
-                    tile.minWidthProperty().bind(tile.prefWidthProperty());
-                    tile.minHeightProperty().bind(tile.prefHeightProperty());
-
-                    // MAPPING: Grid(Row) / 2 = Logic(Row)
-                    // e.g., Grid(2,4) maps to Logic(1,2)
-                    int logicRow = row / 2;
-                    int logicCol = col / 2;
-
-                    tile.setOnAction(e -> handleMove(logicRow, logicCol, tile));
-
-                    gameBoard.add(tile, col, row);
-                }
-
-                // --- diamonds ---
-                else if (row % 2 != 0 && col % 2 != 0) {
-                    Button diamond = new Button();
-                    diamond.getStyleClass().add("diamond-tile");
-
-                    // Responsive Size (Slightly larger than the gap to look connected)
-                    diamond.prefWidthProperty().bind(rootStackPane.heightProperty().divide(40));
-                    diamond.prefHeightProperty().bind(rootStackPane.heightProperty().divide(40));
-                    diamond.minWidthProperty().bind(diamond.prefWidthProperty());
-                    diamond.minHeightProperty().bind(diamond.prefHeightProperty());
-
-                    diamond.setRotate(45);
-
-                    // For now, diamonds are just visual/buttons.
-                    // We don't call handleMove to avoid overlapping the 11x11 logic.
-                    int finalRow = row;
-                    int finalCol = col;
-                    diamond.setOnAction(e -> handleMove(finalRow, finalCol, diamond));
-
-                    gameBoard.add(diamond, col, row);
-                }
-
-                // These fill the empty spaces between an octagon and a diamond
-                else {
+        // Pass 1: octagons and spacers
+        for (int vRow = 0; vRow < 19; vRow++) {
+            for (int vCol = 0; vCol < 21; vCol++) {
+                if (vRow % 2 == 0 && vCol % 2 == 0) {
+                    Button oct = new Button();
+                    oct.getStyleClass().add("board-tile");
+                    bindSize(oct, 22);
+                    final int logicX = vCol;
+                    final int logicY = vRow;
+                    buttonMap.put(logicX + "," + logicY, oct);
+                    oct.setOnAction(e -> handleMove(logicX, logicY, oct));
+                    gameBoard.add(oct, vCol, vRow);
+                } else if (!(vRow % 2 == 1 && vCol % 2 == 1)) {
                     Region spacer = new Region();
                     spacer.setPrefSize(0, 0);
-                    gameBoard.add(spacer, col, row);
+                    spacer.setPickOnBounds(false);
+                    gameBoard.add(spacer, vCol, vRow);
                 }
             }
         }
 
-        // 3. Keyboard Listener for the Escape Exit Feature
+        // Pass 2: diamonds last so they render on top and sit in the corner gaps
+        for (int vRow = 1; vRow < 19; vRow += 2) {
+            for (int vCol = 1; vCol < 21; vCol += 2) {
+                Button dia = new Button();
+                dia.getStyleClass().add("diamond-tile");
+                bindSize(dia, 32);
+                GridPane.setFillWidth(dia, false);
+                GridPane.setFillHeight(dia, false);
+                GridPane.setHalignment(dia, HPos.CENTER);
+                GridPane.setValignment(dia, VPos.CENTER);
+                final int logicX = vCol;
+                final int logicY = vRow;
+                buttonMap.put(logicX + "," + logicY, dia);
+                dia.setOnAction(e -> handleMove(logicX, logicY, dia));
+                gameBoard.add(dia, vCol, vRow);
+            }
+        }
+
+        gameBoard.setOnMouseClicked(e -> gameBoard.requestFocus());
         gameBoard.setFocusTraversable(true);
-        gameBoard.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                if (exitTimeline.getStatus() != Animation.Status.RUNNING) {
-                    exitTimeline.playFromStart();
-                }
-            }
-        });
 
-        gameBoard.setOnKeyReleased(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                exitTimeline.stop();
-            }
-        });
-
-
-        //for the exit feature
-        gameBoard.setFocusTraversable(true); // Allow the board to "hear" the keyboard
-
-        gameBoard.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                // If they aren't already holding it, start the countdown
-                if (exitTimeline.getStatus() != Animation.Status.RUNNING) {
-                    exitTimeline.playFromStart();
-                    System.out.println("Holding Escape...");
-
-                }
-            }
-        });
-
-        gameBoard.setOnKeyReleased(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                // If they let go before 3 seconds, cancel the countdown!
-                exitTimeline.stop();
-                System.out.println("Escape released too early.");
-            }
-        });
-
+        // Show who plays first
+        playerToPlay.setManaged(true);
+        playerToPlay.setVisible(true);
+        if (gameMode == 1) {
+            playerToPlay.setText("Player (Black) to play");
+        } else {
+            playerToPlay.setText("Black to play");
+        }
     }
 
-    //needed for the label
+    private void bindSize(Button btn, double divisor) {
+        btn.prefWidthProperty().bind(rootStackPane.heightProperty().divide(divisor));
+        btn.prefHeightProperty().bind(rootStackPane.heightProperty().divide(divisor));
+        btn.minWidthProperty().bind(btn.prefWidthProperty());
+        btn.minHeightProperty().bind(btn.prefHeightProperty());
+        btn.setFocusTraversable(false);
+    }
+
     @FXML private Label playerToPlay;
 
-    @FXML
-    private void handleMove(int row, int col, Button clickedButton) {
-        if(boardLogic[row][col] == null){   //for empty spot
-            totalNumberMoves++;
-
-            //white is o, black is x
-            //meaning it's even (white should play)
-            if(totalNumberMoves % 2 == 0){
-                if(gameMode == 1){
-                    playerToPlay.setManaged(true);
-                    playerToPlay.setVisible(true);
-                    playerToPlay.setText("Player (Black) to play");
-                }
-                if(gameMode == 2){
-                    playerToPlay.setManaged(true);
-                    playerToPlay.setVisible(true);
-                    playerToPlay.setText("Black to play");
-                }
-
-                boardLogic[row][col] = "O";
-                    clickedButton.getStyleClass().removeAll("whiteButtonPressed, focus");
-                    //In this way you're sure you have no styles applied to your object button
-                    clickedButton.getStyleClass().add("whiteButtonPressed");
-                    //then you specify the class you would give to the button
-                System.out.println("White placed in " + row + " " + col + " gamemode: " + gameMode);   //for us to see it worked
-
-            }
-            else{
-                if(gameMode == 1){
-                    playerToPlay.setManaged(true);
-                    playerToPlay.setVisible(true);
-                    playerToPlay.setText("Bot to play");
-                }
-                if(gameMode == 2){
-                    playerToPlay.setManaged(true);
-                    playerToPlay.setVisible(true);
-                    playerToPlay.setText("White to play");
-                }
-
-                boardLogic[row][col] = "X";
-                    clickedButton.getStyleClass().removeAll("blackButtonPressed, focus");
-                    //In this way you're sure you have no styles applied to your object button
-                    clickedButton.getStyleClass().add("blackButtonPressed");
-                    //then you specify the class you would give to the button
-                System.out.println("Black placed in " + row + " " + col + " gamemode: " + gameMode);   //for us to see it worked
-
-            }
+    private void handleMove(int x, int y, Button clickedButton) {
+        if (boardLogic[x][y] != null) {
+            return;
         }
-        else{
-            System.out.println("invalid move DEBUG: " + row + " " + col);
+
+        totalNumberMoves++;
+        // Odd move count = Black (X), Even move count = White (O)
+        boolean isBlackMove = (totalNumberMoves % 2 == 1);
+        String playerPiece = isBlackMove ? "X" : "O";
+        String moveClass   = isBlackMove ? "blackButtonPressed" : "whiteButtonPressed";
+        String nextPlayer  = isBlackMove ? "White" : "Black";
+
+        boardLogic[x][y] = playerPiece;
+
+        clickedButton.getStyleClass().removeAll("whiteButtonPressed", "blackButtonPressed");
+        clickedButton.getStyleClass().add(moveClass);
+        clickedButton.applyCss();
+
+        System.out.println(playerPiece + " placed at (" + x + "," + y + ") gamemode: " + gameMode);
+
+        // Update "who plays next" label
+        if (gameMode == 1) {
+            // PvB: Black = Player, White = Bot
+            playerToPlay.setText(isBlackMove ? "Bot to play" : "Player (Black) to play");
+        } else {
+            playerToPlay.setText(nextPlayer + " to play");
         }
+
     }
 
-
-}//end of class
+} // end of class

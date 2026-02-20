@@ -24,21 +24,19 @@
 
 /*new css for board*/
 .board-tile {
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
-    -fx-shape: "M 15,0 H 35 L 50,15 V 35 L 35,50 H 15 L 0,35 V 15 Z";
+    -fx-shape: "M 14,0 H 36 L 50,14 V 36 L 36,50 H 14 L 0,36 V 14 Z";
     -fx-background-color: #725242;
-    -fx-background-insets: 0; /* Ensures the shape fills the whole 50x50 area */
+    -fx-background-insets: 0;
 }
 
 .board-tile:hover {
     -fx-background-color: #5e4437;
-    -fx-border-color: #5e4437;
+    -fx-background-insets: 0;
 }
 
 .board-tile:pressed {
     -fx-background-color: #422f25;
-    -fx-border-color: #422f25 ;
+    -fx-background-insets: 0;
 }
 
 
@@ -54,34 +52,45 @@
     -fx-text-fill: #725031;
 }
 
-.whiteButtonPressed{
-    -fx-background-color: #ffffff;
-    -fx-border-color: #ffffff;
+.board-tile.whiteButtonPressed {
+    -fx-shape: "M 14,0 H 36 L 50,14 V 36 L 36,50 H 14 L 0,36 V 14 Z";
+    -fx-background-color: #ffffff !important;
+    -fx-background-insets: 0;
 }
 
-.blackButtonPressed{
-    -fx-background-color: #000000;
-    -fx-border-color: #000000;
+.board-tile.blackButtonPressed {
+    -fx-shape: "M 14,0 H 36 L 50,14 V 36 L 36,50 H 14 L 0,36 V 14 Z";
+    -fx-background-color: #000000 !important;
+    -fx-background-insets: 0;
 }
 
 
-.playerToPlay{
+.playerToPlay {
     -fx-font-family: "Comic Sans MS";
     -fx-font-size: 30pt;
     -fx-text-fill: #725031;
 }
 
-.board-tile {
-    /* Remove pref-width and pref-height from here! */
-    -fx-shape: "M 14,0 H 36 L 50,14 V 36 L 36,50 H 14 L 0,36 V 14 Z";
+.diamond-tile {
+    -fx-shape: "M 0,25 L 25,0 L 50,25 L 25,50 Z";
+    -fx-background-color: #d7145;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-    -fx-background-color: #725242;
 }
 
-.diamond-tile {
-    /* Remove pref-width and pref-height from here! */
-    -fx-background-color: #333333;
-    -fx-background-radius: 0;
+.diamond-tile:hover {
+    -fx-background-color: #555555;
+    -fx-background-insets: 0;
+}
+
+.diamond-tile.whiteButtonPressed {
+    -fx-shape: "M 0,25 L 25,0 L 50,25 L 25,50 Z";
+    -fx-background-color: #ffffff !important;
+    -fx-background-insets: 0;
+}
+
+.diamond-tile.blackButtonPressed {
+    -fx-shape: "M 0,25 L 25,0 L 50,25 L 25,50 Z";
+    -fx-background-color: #000000 !important;
     -fx-background-insets: 0;
 }
