@@ -73,7 +73,7 @@
 
 .diamond-tile {
     -fx-shape: "M 0,25 L 25,0 L 50,25 L 25,50 Z";
-    -fx-background-color: #d7145;
+    -fx-background-color: #725242;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
 }
