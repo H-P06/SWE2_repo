@@ -11,14 +11,21 @@ public class application extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(application.class.getResource("title_screen.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);   //size of window
+        // Add the leading / and the full package path
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/javafxtest/title_screen.fxml"));
 
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
 
-        stage.setTitle("Quax Software System"); //this is for the window title
+        // Do the same for the CSS
+        scene.getStylesheets().add(getClass().getResource("/com/example/javafxtest/style.css").toExternalForm());
+
+        stage.setTitle("Quax Software System");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 

@@ -136,8 +136,8 @@ public class HelloController {
     private GridPane gameBoard;
     public int numberMove = 0;
 
-    private String[][] boardLogic = new String[11][11];
-
+    //private String[][] boardLogic = new String[11][11];
+    private String[][] boardLogic = new String[21][21];
 
     @FXML private StackPane rootStackPane; // No longer red!
 
@@ -165,12 +165,9 @@ public class HelloController {
                     tile.minWidthProperty().bind(tile.prefWidthProperty());
                     tile.minHeightProperty().bind(tile.prefHeightProperty());
 
-                    // MAPPING: Grid(Row) / 2 = Logic(Row)
-                    // e.g., Grid(2,4) maps to Logic(1,2)
-                    int logicRow = row / 2;
-                    int logicCol = col / 2;
-
-                    tile.setOnAction(e -> handleMove(logicRow, logicCol, tile));
+                    int finalRow = row; // Use the raw 0-20 value
+                    int finalCol = col;
+                    tile.setOnAction(e -> handleMove(finalRow, finalCol, tile));
 
                     gameBoard.add(tile, col, row);
                 }
