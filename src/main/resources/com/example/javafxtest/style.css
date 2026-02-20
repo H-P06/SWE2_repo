@@ -1,9 +1,22 @@
 .root {
+    -fx-alignment: center;
     -fx-background-color: #cba97f;
 }
 
 
-.title{
+.Quaxtitle{
+    -fx-text-fill: #a17c53;
+    -fx-font-size:40px;
+    -fx-font-family: "Comic Sans MS";
+}
+
+.PVBtitle{
+    -fx-text-fill: #a17c53;
+    -fx-font-size:40px;
+    -fx-font-family: "Comic Sans MS";
+}
+
+.PVPtitle{
     -fx-text-fill: #a17c53;
     -fx-font-size:40px;
     -fx-font-family: "Comic Sans MS";
@@ -22,7 +35,6 @@
     -fx-background-color: #835e39;
 }
 
-/*new css for board*/
 .board-tile {
     -fx-shape: "M 14,0 H 36 L 50,14 V 36 L 36,50 H 14 L 0,36 V 14 Z";
     -fx-background-color: #725242;

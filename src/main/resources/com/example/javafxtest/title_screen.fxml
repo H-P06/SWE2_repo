@@ -6,15 +6,19 @@
 
 <?import javafx.scene.control.Button?>
 
-<!--for aligning and fitting to window, alignment without coordinates-->
+<!--for aligning and fitting to window, alignment without exact coordinates-->
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.javafxtest.HelloController" stylesheets="@style.css">
+
+<!--    so it doesn't touch the edges-->
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
     <!-- buttons on title screen and the title itself-->
-    <Label text="Quax Software System" styleClass="title" />
+    <Label text="Quax Software System" styleClass="Quaxtitle" />
+
+    <!-- when you click on the buttons, execute this method (its going to switch to the right scene)-->
     <Button text="Player vs Bot" onAction="#onButtonClickPVB"/>
     <Button text="Player vs Player" onAction="#onButtonClickPVP"/>
 </VBox>
