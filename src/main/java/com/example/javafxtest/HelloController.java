@@ -38,10 +38,6 @@ public class HelloController {
 
     @FXML
     public void initialize() {
-        System.out.println("Fields ready - gameBoard: " + (gameBoard != null) +
-                ", root: " + (rootStackPane != null) +
-                ", label: " + (playerToPlay != null));
-
         exitTimeline = new Timeline(
                 new KeyFrame(Duration.millis(100), event -> checkEscapeHold())
         );
@@ -49,7 +45,6 @@ public class HelloController {
 
         Platform.runLater(() -> {
             if (gameBoard == null || rootStackPane == null) {
-                System.err.println("FATAL: FXML fields still null after delay! Check module-info.java or FXML path.");
                 return;
             }
             createBoard();
