@@ -154,14 +154,14 @@ public class HelloController {
             if (col % 2 == 1) { cc.setMinWidth(3); cc.setPrefWidth(3); cc.setMaxWidth(3); }
             gameBoard.getColumnConstraints().add(cc);
         }
-        for (int row = 0; row < 19; row++) {
+        for (int row = 0; row < 21; row++) {
             RowConstraints rc = new RowConstraints();
             if (row % 2 == 1) { rc.setMinHeight(3); rc.setPrefHeight(3); rc.setMaxHeight(3); }
             gameBoard.getRowConstraints().add(rc);
         }
 
         // Pass 1: octagons and spacers
-        for (int vRow = 0; vRow < 19; vRow++) {
+        for (int vRow = 0; vRow < 21; vRow++) {
             for (int vCol = 0; vCol < 21; vCol++) {
                 if (vRow % 2 == 0 && vCol % 2 == 0) {
                     Button oct = new Button();
@@ -182,7 +182,7 @@ public class HelloController {
         }
 
         // Pass 2: diamonds last so they render on top and sit in the corner gaps
-        for (int vRow = 1; vRow < 19; vRow += 2) {
+        for (int vRow = 1; vRow < 21; vRow += 2) {
             for (int vCol = 1; vCol < 21; vCol += 2) {
                 Button dia = new Button();
                 dia.getStyleClass().add("diamond-tile");
