@@ -81,7 +81,7 @@
 
 .diamond-tile {
     /* Remove pref-width and pref-height from here! */
-    -fx-background-color: #333333;
+    -fx-background-color: #725242;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
 }

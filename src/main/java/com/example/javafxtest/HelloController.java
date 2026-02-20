@@ -191,6 +191,7 @@ public class HelloController {
                     int finalCol = col;
                     diamond.setOnAction(e -> handleMove(finalRow, finalCol, diamond));
 
+
                     gameBoard.add(diamond, col, row);
                 }
 
@@ -267,7 +268,7 @@ public class HelloController {
                 }
 
                 boardLogic[row][col] = "O";
-                    clickedButton.getStyleClass().removeAll("whiteButtonPressed, focus");
+                    clickedButton.getStyleClass().removeAll("whiteButtonPressed", "focus");
                     //In this way you're sure you have no styles applied to your object button
                     clickedButton.getStyleClass().add("whiteButtonPressed");
                     //then you specify the class you would give to the button
