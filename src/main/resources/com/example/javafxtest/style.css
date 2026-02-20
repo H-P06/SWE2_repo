@@ -24,14 +24,11 @@
 
 /*new css for board*/
 .board-tile {
-    -fx-pref-width: 10px;
-    -fx-pref-height: 10px;
-
-
-    /* This path creates an octagon based on a 100x100 coordinate system */
-    -fx-shape: "M 30,0 H 70 L 100,30 V 70 L 70,100 H 30 L 0,70 V 30 Z";
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+    -fx-shape: "M 15,0 H 35 L 50,15 V 35 L 35,50 H 15 L 0,35 V 15 Z";
     -fx-background-color: #725242;
-    -fx-border-color: #725242;
+    -fx-background-insets: 0; /* Ensures the shape fills the whole 50x50 area */
 }
 
 .board-tile:hover {
@@ -58,8 +55,8 @@
 }
 
 .whiteButtonPressed{
-    -fx-background-color: #850000;
-    -fx-border-color: #850000;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ffffff;
 }
 
 .blackButtonPressed{
@@ -72,4 +69,19 @@
     -fx-font-family: "Comic Sans MS";
     -fx-font-size: 30pt;
     -fx-text-fill: #725031;
+}
+
+.board-tile {
+    /* Remove pref-width and pref-height from here! */
+    -fx-shape: "M 14,0 H 36 L 50,14 V 36 L 36,50 H 14 L 0,36 V 14 Z";
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: #725242;
+}
+
+.diamond-tile {
+    /* Remove pref-width and pref-height from here! */
+    -fx-background-color: #333333;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
 }

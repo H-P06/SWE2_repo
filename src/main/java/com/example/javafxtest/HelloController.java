@@ -4,12 +4,19 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
+import java.util.Objects;
+
 import javafx.event.ActionEvent;//for swapping scenes
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -82,7 +89,7 @@ public class HelloController {
             Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
 
             //linking style.css
-            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
 
 
             stage.setScene(scene);
@@ -132,29 +139,88 @@ public class HelloController {
     private String[][] boardLogic = new String[11][11];
 
 
+    @FXML private StackPane rootStackPane; // No longer red!
+
     private void createBoard() {
-        for (int row = 0; row < 11; row++) {
-            for (int col = 0; col < 11; col++) {
+// 1. Reset and Setup
+        gameBoard.getChildren().clear();
+        gameBoard.setAlignment(Pos.CENTER);
+        gameBoard.setHgap(0);
+        gameBoard.setVgap(0);
+        gameBoard.setPadding(new javafx.geometry.Insets(20));
 
-                //each tile is a button
-                Button tile = new Button();
-                tile.setPrefSize(50, 50);
-                tile.setMinSize(50, 50);
-                tile.setMaxSize(50, 50);
+        // 2. Build the 21x21 Mosaic
+        for (int row = 0; row < 21; row++) {
+            for (int col = 0; col < 21; col++) {
 
-                //turn this into a css class (for consistency)
-                tile.getStyleClass().add("board-tile");
+                // --- CASE 1: OCTAGONS (The Playable Tiles) ---
+                // These occupy Even Rows and Even Columns (0,0), (0,2), (2,0)...
+                if (row % 2 == 0 && col % 2 == 0) {
+                    Button tile = new Button();
+                    tile.getStyleClass().add("board-tile");
 
-                //interaction with button
-                int finalRow = row;
-                int finalCol = col;
-                tile.setOnAction(event -> handleMove(finalRow, finalCol, tile));
+                    // Responsive Size Binding
+                    tile.prefWidthProperty().bind(rootStackPane.heightProperty().divide(25));
+                    tile.prefHeightProperty().bind(rootStackPane.heightProperty().divide(25));
+                    tile.minWidthProperty().bind(tile.prefWidthProperty());
+                    tile.minHeightProperty().bind(tile.prefHeightProperty());
 
+                    // MAPPING: Grid(Row) / 2 = Logic(Row)
+                    // e.g., Grid(2,4) maps to Logic(1,2)
+                    int logicRow = row / 2;
+                    int logicCol = col / 2;
 
-                //Add to GridPane
-                gameBoard.add(tile, col, row);
+                    tile.setOnAction(e -> handleMove(logicRow, logicCol, tile));
+
+                    gameBoard.add(tile, col, row);
+                }
+
+                // --- diamonds ---
+                else if (row % 2 != 0 && col % 2 != 0) {
+                    Button diamond = new Button();
+                    diamond.getStyleClass().add("diamond-tile");
+
+                    // Responsive Size (Slightly larger than the gap to look connected)
+                    diamond.prefWidthProperty().bind(rootStackPane.heightProperty().divide(40));
+                    diamond.prefHeightProperty().bind(rootStackPane.heightProperty().divide(40));
+                    diamond.minWidthProperty().bind(diamond.prefWidthProperty());
+                    diamond.minHeightProperty().bind(diamond.prefHeightProperty());
+
+                    diamond.setRotate(45);
+
+                    // For now, diamonds are just visual/buttons.
+                    // We don't call handleMove to avoid overlapping the 11x11 logic.
+                    int finalRow = row;
+                    int finalCol = col;
+                    diamond.setOnAction(e -> handleMove(finalRow, finalCol, diamond));
+
+                    gameBoard.add(diamond, col, row);
+                }
+
+                // These fill the empty spaces between an octagon and a diamond
+                else {
+                    Region spacer = new Region();
+                    spacer.setPrefSize(0, 0);
+                    gameBoard.add(spacer, col, row);
+                }
             }
         }
+
+        // 3. Keyboard Listener for the Escape Exit Feature
+        gameBoard.setFocusTraversable(true);
+        gameBoard.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                if (exitTimeline.getStatus() != Animation.Status.RUNNING) {
+                    exitTimeline.playFromStart();
+                }
+            }
+        });
+
+        gameBoard.setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                exitTimeline.stop();
+            }
+        });
 
 
         //for the exit feature
@@ -195,7 +261,7 @@ public class HelloController {
                 if(gameMode == 1){
                     playerToPlay.setManaged(true);
                     playerToPlay.setVisible(true);
-                    playerToPlay.setText("Player to play");
+                    playerToPlay.setText("Player (Black) to play");
                 }
                 if(gameMode == 2){
                     playerToPlay.setManaged(true);
@@ -233,7 +299,7 @@ public class HelloController {
             }
         }
         else{
-            System.out.println("invalid move");
+            System.out.println("invalid move DEBUG: " + row + " " + col);
         }
     }
 

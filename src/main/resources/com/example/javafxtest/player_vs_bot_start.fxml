@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 
+<StackPane fx:id="rootStackPane" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.javafxtest.HelloController">
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.javafxtest.HelloController">
+    <VBox alignment="CENTER" spacing="20.0">
+        <Label fx:id="playerToPlay" text="Player (Black) to move" styleClass="playerToPlay" />
 
+        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
+        </GridPane>
+    </VBox>
 
-
-<!--    <Label text="Player vs Bot" styleClass="playerVsBot" />-->
-    <Label fx:id="playerToPlay" visible="true" text="Player to move" styleClass="playerToPlay" />
-    <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
-    </GridPane>
-
-
-<!--    <Label fx:id="playerToPlay" text="Player to play" visible="false" styleClass="playerToPlay" />-->
-
-</VBox>
+</StackPane>
