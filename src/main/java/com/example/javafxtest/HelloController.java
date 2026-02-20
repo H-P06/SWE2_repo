@@ -1,5 +1,6 @@
 package com.example.javafxtest;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -7,6 +8,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
@@ -195,6 +197,24 @@ public class HelloController {
         }
 
         gameBoard.setOnMouseClicked(e -> gameBoard.requestFocus());
+        gameBoard.setFocusTraversable(true);
+
+        gameBoard.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                if (exitTimeline.getStatus() != Animation.Status.RUNNING) {
+                    exitTimeline.playFromStart();
+                }
+            }
+        });
+
+        gameBoard.setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                exitTimeline.stop();
+            }
+        });
+
+
+        //for the exit feature
         gameBoard.setFocusTraversable(true);
 
         // Show who plays first
