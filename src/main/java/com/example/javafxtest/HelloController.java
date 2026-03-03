@@ -28,7 +28,7 @@ public class HelloController {
 
     private Timeline exitTimeline;
     private long exitPressTime = 0;
-    private Map<String, Button> buttonMap = new HashMap<>();
+    Map<String, Button> buttonMap = new HashMap<>();
     private QuaxEngine engine = new QuaxEngine();
 
 
@@ -162,7 +162,7 @@ public class HelloController {
         btn.setFocusTraversable(false);
     }
 
-    @FXML private Label playerToPlay;
+    @FXML Label playerToPlay;
 
     private void handleMove(int x, int y, Button clickedButton) {
         System.out.println("Move: " + engine.getMoveCount());
@@ -214,7 +214,7 @@ public class HelloController {
 
     @FXML Button pieRuleButton;
 
-    private void updatePieRuleVisibility() {
+    void updatePieRuleVisibility() {
         if (numberMove == 1) {
             pieRuleButton.setVisible(true);
             pieRuleButton.setManaged(true);
@@ -225,7 +225,7 @@ public class HelloController {
         }
     }
 
-    private void setPieRuleButton() {
+    void setPieRuleButton() {
         pieRuleButton.setVisible(false);
         pieRuleButton.setManaged(false);
 
@@ -237,7 +237,7 @@ public class HelloController {
         });
     }
 
-    private void handlePieRuleLogic(){
+    void handlePieRuleLogic(){
         engine.applyPieRule();
 
         for (Map.Entry<String, Button> entry : buttonMap.entrySet()) {
@@ -256,4 +256,8 @@ public class HelloController {
         updatePieRuleVisibility();
     }
 
+    //will be used for test
+    public QuaxEngine getEngine() {
+        return  this.engine;
+    }
 } // end of class

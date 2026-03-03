@@ -1,5 +1,10 @@
 package com.example.javafxtest;
 
+import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +32,72 @@ class HelloControllerTest {
         engine.placePiece(0, 0); // X
         engine.placePiece(1, 1); // O
         assertEquals("O", engine.getPieceAt(1, 1));
+        assertEquals(2, engine.getMoveCount());
+    }
+
+    private HelloController controller;
+
+    @BeforeAll
+    static void initSimulation() {
+        //initialising simulation so we can actually test on something
+        Platform.startup(() -> {});
+    }
+
+    @BeforeEach
+    void setUp() {
+        //make instance of controller
+        controller = new HelloController();
+        // set button since FXML isn't loading here
+        controller.pieRuleButton = new Button();
+
+        //this is needed in pieRuleLogic test:
+        controller.playerToPlay = new Label();
+    }
+
+    @Test
+    void testInitialPieRuleOnBeginning() {
+        controller.setPieRuleButton();
+
+        assertFalse(controller.pieRuleButton.isVisible(),"The button is to be invisible in the beginning");
+        assertFalse(controller.pieRuleButton.isManaged(),"The button should not be managed in the beginning or else it will start pushing things when it's not even there");
+    }
+
+    @Test
+    void testPieRuleVisibility() {
+        //pie rule will be visible after the first move
+        controller.numberMove = 1;
+
+        controller.updatePieRuleVisibility();
+
+        assertTrue(controller.pieRuleButton.isVisible(),"The button should be visible after 1 move");
+        assertTrue(controller.pieRuleButton.isManaged(),"The button should be managed after 1 move");
+
+    }
+
+    @Test
+    void    testPieRuleLogic() {
+        //lets pretend black places something at 0,0 (black is X) (white is O)
+        QuaxEngine engine = controller.getEngine();
+
+        //place piece
+        engine.placePiece(0,0);
+
+        //check if X is placed in 0,0
+        assertEquals("X", engine.getPieceAt(0, 0), "First move should be X");
+
+
+        //button to represent piece
+        Button boardButton = new Button();
+
+        //put it in the map so controller can find
+        controller.buttonMap.put("0,0", boardButton);
+
+        //do the handlePieRuleLogic
+        controller.handlePieRuleLogic();
+
+        assertEquals("O", engine.getPieceAt(0, 0), "This should now be O instead of X");
+
+        //moves count should be incremented
         assertEquals(2, engine.getMoveCount());
     }
 }
