@@ -75,6 +75,18 @@ class HelloControllerTest {
     }
 
     @Test
+    void testPieRuleVisibility2Moves() {
+        //pie rule will be visible after the first move
+        controller.numberMove = 2;
+
+        controller.updatePieRuleVisibility();
+
+        assertFalse(controller.pieRuleButton.isVisible(),"The button should not be visible when we have 2 moves");
+        assertFalse(controller.pieRuleButton.isManaged(),"The button should be managed when we have 2 moves");
+
+    }
+
+    @Test
     void    testPieRuleLogic() {
         //lets pretend black places something at 0,0 (black is X) (white is O)
         QuaxEngine engine = controller.getEngine();
