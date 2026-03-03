@@ -2,12 +2,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.control.Button?>
 <StackPane fx:id="rootStackPane" xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.example.javafxtest.HelloController">
 
     <VBox alignment="CENTER" spacing="20.0">
         <Label fx:id="labelGamemode" text="Player vs Bot" styleClass="PVBtitle" />
         <Label fx:id="playerToPlay" text="Black (Player) to move" styleClass="playerToPlay" />
+        <Button fx:id="pieRuleButton" visible="false" managed="false" />
 
         <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
         </GridPane>

@@ -30,4 +30,19 @@ public class QuaxEngine {
         totalNumberMoves = 0;
     }
 
+    //to handle pie rule
+    public void applyPieRule(){
+        //find the one piece on the board
+        for(int i = 0; i < 22; i++){
+            for(int j = 0; j < 22; j++){
+                //if X is in that spot
+                if("X".equals(boardLogic[i][j])){
+                    boardLogic[i][j] = "O";
+                    totalNumberMoves = 2;
+                    return;
+                }
+            }
+        }
+    }
+
 }
