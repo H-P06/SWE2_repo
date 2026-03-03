@@ -41,6 +41,7 @@ public class HelloController {
                 return;
             }
             createBoard();
+            setPieRuleButton();
         });
     }
 
@@ -164,9 +165,15 @@ public class HelloController {
     @FXML private Label playerToPlay;
 
     private void handleMove(int x, int y, Button clickedButton) {
+        System.out.println("Move: " + engine.getMoveCount());
         boolean success = engine.placePiece(x, y);
 
-        if (!success) return; // nvalid move or spot taken
+        if (!success) return; // valid move or spot taken
+
+        numberMove++;
+        updatePieRuleVisibility();
+
+
 
         //result from the engine to update the UI
         String piece = engine.getPieceAt(x, y);
@@ -202,6 +209,51 @@ public class HelloController {
                 exitTimeline.stop();
             }
         });
+    }
+
+
+    @FXML Button pieRuleButton;
+
+    private void updatePieRuleVisibility() {
+        if (numberMove == 1) {
+            pieRuleButton.setVisible(true);
+            pieRuleButton.setManaged(true);
+            pieRuleButton.setText("Activate Pie Rule");
+        } else {//when pie rule window is over
+            pieRuleButton.setVisible(false);
+            pieRuleButton.setManaged(false);
+        }
+    }
+
+    private void setPieRuleButton() {
+        pieRuleButton.setVisible(false);
+        pieRuleButton.setManaged(false);
+
+        pieRuleButton.setOnAction(event -> {
+            System.out.println("Pie Rule Activated!");
+            System.out.println("no moves: " + numberMove);
+            handlePieRuleLogic();
+            updatePieRuleVisibility();
+        });
+    }
+
+    private void handlePieRuleLogic(){
+        engine.applyPieRule();
+
+        for (Map.Entry<String, Button> entry : buttonMap.entrySet()) {
+            Button btn = entry.getValue();
+            if (btn.getStyleClass().contains("blackButtonPressed")) {
+                btn.getStyleClass().remove("blackButtonPressed");
+                btn.getStyleClass().add("whiteButtonPressed");
+                break;
+            }
+        }
+
+        this.numberMove = engine.getMoveCount();
+        updateLabel(false);
+
+        //so button is gone
+        updatePieRuleVisibility();
     }
 
 } // end of class

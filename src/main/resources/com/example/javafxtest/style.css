@@ -106,3 +106,9 @@
     -fx-background-color: #000000 !important;
     -fx-background-insets: 0;
 }
+
+.pieRuleButton {
+    -fx-font-family: "Comic Sans MS";
+    -fx-font-size: 30pt;
+    -fx-text-fill: #725031;
+}
