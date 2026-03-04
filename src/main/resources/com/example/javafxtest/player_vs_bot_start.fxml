@@ -9,9 +9,9 @@
     <VBox alignment="CENTER" spacing="20.0">
         <Label fx:id="labelGamemode" text="Player vs Bot" styleClass="PVBtitle" />
         <Label fx:id="playerToPlay" text="Black (Player) to move" styleClass="playerToPlay" />
-        <Button fx:id="pieRuleButton" visible="false" managed="false" />
+        <Button fx:id="pieRuleButton" visible="false" />
 
-        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
+        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="2" vgap="2">
         </GridPane>
     </VBox>
 

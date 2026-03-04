@@ -111,4 +111,6 @@
     -fx-font-family: "Comic Sans MS";
     -fx-font-size: 30pt;
     -fx-text-fill: #725031;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
 }

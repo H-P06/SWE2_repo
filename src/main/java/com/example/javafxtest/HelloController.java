@@ -217,17 +217,17 @@ public class HelloController {
     void updatePieRuleVisibility() {
         if (numberMove == 1) {
             pieRuleButton.setVisible(true);
-            pieRuleButton.setManaged(true);
+            //pieRuleButton.setManaged(false);
             pieRuleButton.setText("Activate Pie Rule");
         } else {//when pie rule window is over
             pieRuleButton.setVisible(false);
-            pieRuleButton.setManaged(false);
+            //pieRuleButton.setManaged(false);
         }
     }
 
     void setPieRuleButton() {
         pieRuleButton.setVisible(false);
-        pieRuleButton.setManaged(false);
+        //pieRuleButton.setManaged(false);
 
         pieRuleButton.setOnAction(event -> {
             System.out.println("Pie Rule Activated!");
