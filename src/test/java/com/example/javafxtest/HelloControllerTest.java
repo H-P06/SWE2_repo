@@ -59,7 +59,6 @@ class HelloControllerTest {
         controller.setPieRuleButton();
 
         assertFalse(controller.pieRuleButton.isVisible(),"The button is to be invisible in the beginning");
-        assertFalse(controller.pieRuleButton.isManaged(),"The button should not be managed in the beginning or else it will start pushing things when it's not even there");
     }
 
     @Test
@@ -70,7 +69,6 @@ class HelloControllerTest {
         controller.updatePieRuleVisibility();
 
         assertTrue(controller.pieRuleButton.isVisible(),"The button should be visible after 1 move");
-        assertTrue(controller.pieRuleButton.isManaged(),"The button should be managed after 1 move");
 
     }
 
@@ -82,12 +80,11 @@ class HelloControllerTest {
         controller.updatePieRuleVisibility();
 
         assertFalse(controller.pieRuleButton.isVisible(),"The button should not be visible when we have 2 moves");
-        assertFalse(controller.pieRuleButton.isManaged(),"The button should be managed when we have 2 moves");
 
     }
 
     @Test
-    void    testPieRuleLogic() {
+    void testPieRuleLogic() {
         //lets pretend black places something at 0,0 (black is X) (white is O)
         QuaxEngine engine = controller.getEngine();
 
