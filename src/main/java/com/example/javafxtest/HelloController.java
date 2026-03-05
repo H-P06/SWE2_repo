@@ -1,7 +1,9 @@
 package com.example.javafxtest;
 
 import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -9,6 +11,7 @@ import javafx.geometry.VPos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -24,18 +27,22 @@ import javafx.scene.control.Button;
 
 public class HelloController {
 
-    private Timeline exitTimeline;
-    private long exitPressTime = 0;
     Map<String, Button> buttonMap = new HashMap<>();
     private QuaxEngine engine = new QuaxEngine();
+    private boolean gameOver = false;
 
 
     public static int gameMode = -1;  //1 for PvB, 2 for PvP
+
+    @FXML VBox titleRoot;
 
     @FXML
     public void initialize() {
         Platform.runLater(() -> {
             if (gameBoard == null || rootStackPane == null) {
+                if (titleRoot != null) {
+                    setupEscapeExit(titleRoot.getScene(), Platform::exit);
+                }
                 return;
             }
             createBoard();
@@ -94,15 +101,16 @@ public class HelloController {
     @FXML private StackPane rootStackPane;
 
     private void createBoard() {
-        engine.reset(); // Clear the logic
+        gameBoard.setMaxWidth(Region.USE_PREF_SIZE);
+        gameBoard.setMaxHeight(Region.USE_PREF_SIZE);
+        engine.reset();
+        gameOver = false;
         buttonMap.clear();
         gameBoard.getChildren().clear();
         gameBoard.getColumnConstraints().clear();
         gameBoard.getRowConstraints().clear();
         gameBoard.setAlignment(Pos.CENTER);
-        gameBoard.setPadding(new javafx.geometry.Insets(10));
 
-        //Setup Constraints
         for (int col = 0; col < 21; col++) {
             ColumnConstraints cc = new ColumnConstraints();
             if (col % 2 == 1) { cc.setPrefWidth(3); cc.setMaxWidth(3); }
@@ -114,7 +122,6 @@ public class HelloController {
             gameBoard.getRowConstraints().add(rc);
         }
 
-        // Create Octagons and Diamonds
         for (int vRow = 0; vRow < 21; vRow++) {
             for (int vCol = 0; vCol < 21; vCol++) {
                 if (vRow % 2 == 0 && vCol % 2 == 0) {
@@ -138,6 +145,24 @@ public class HelloController {
         if (styleClass.equals("diamond-tile")) {
             GridPane.setHalignment(btn, HPos.CENTER);
             GridPane.setValignment(btn, VPos.CENTER);
+        }
+
+        if (x == 0 && y == 0) {
+            btn.setStyle("-fx-background-color: #000000, #ffffff, #725242; -fx-background-insets: 0, 3 0 0 0, 3 0 0 3;");
+        } else if (x == 20 && y == 0) {
+            btn.setStyle("-fx-background-color: #000000, #ffffff, #725242; -fx-background-insets: 0, 3 0 0 0, 3 3 0 0;");
+        } else if (x == 0 && y == 20) {
+            btn.setStyle("-fx-background-color: #000000, #ffffff, #725242; -fx-background-insets: 0, 0 0 3 0, 0 0 3 3;");
+        } else if (x == 20 && y == 20) {
+            btn.setStyle("-fx-background-color: #000000, #ffffff, #725242; -fx-background-insets: 0, 0 0 3 0, 0 3 3 0;");
+        } else if (y == 0) {
+            btn.setStyle("-fx-background-color: #000000, #725242; -fx-background-insets: 0, 3 0 0 0;");
+        } else if (y == 20) {
+            btn.setStyle("-fx-background-color: #000000, #725242; -fx-background-insets: 0, 0 0 3 0;");
+        } else if (x == 0) {
+            btn.setStyle("-fx-background-color: #ffffff, #725242; -fx-background-insets: 0, 0 0 0 3;");
+        } else if (x == 20) {
+            btn.setStyle("-fx-background-color: #ffffff, #725242; -fx-background-insets: 0, 0 3 0 0;");
         }
 
         btn.setOnAction(e -> handleMove(x, y, btn));
@@ -164,6 +189,8 @@ public class HelloController {
     @FXML Label playerToPlay;
 
     private void handleMove(int x, int y, Button clickedButton) {
+        if (gameOver) return;
+
         System.out.println("Move: " + engine.getMoveCount());
         boolean success = engine.placePiece(x, y);
 
@@ -192,23 +219,54 @@ public class HelloController {
             playerToPlay.setText(nextPlayer + " to play");
         }
 
+        String winner = engine.checkWinner();
+        if (winner != null) {
+            gameOver = true;
+            String winnerName;
+            if (gameMode == 1) {
+                winnerName = winner.equals("X") ? "Player (Black)" : "Bot (White)";
+            } else {
+                winnerName = winner.equals("X") ? "Black" : "White";
+            }
+            playerToPlay.setText(winnerName + " wins!");
+        }
     }
 
     private void setupKeyHandlers() {
-        gameBoard.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                exitPressTime = System.currentTimeMillis();
-                if (exitTimeline.getStatus() != Animation.Status.RUNNING) {
-                    exitTimeline.play();
-                }
-            }
-        });
+        setupEscapeExit(gameBoard.getScene(), this::navigateToTitle);
+    }
 
-        gameBoard.setOnKeyReleased(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                exitTimeline.stop();
+    private void setupEscapeExit(javafx.scene.Scene scene, Runnable onExit) {
+        if (scene == null) return;
+        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(3), e -> onExit.run()));
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE && tl.getStatus() != Animation.Status.RUNNING) {
+                tl.playFromStart();
             }
         });
+        scene.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                tl.stop();
+            }
+        });
+    }
+
+    private void navigateToTitle() {
+        try {
+            Stage stage = (Stage) gameBoard.getScene().getWindow();
+            double currentWidth = stage.getWidth();
+            double currentHeight = stage.getHeight();
+            boolean wasMaximized = stage.isMaximized();
+            gameMode = -1;
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("title_screen.fxml"));
+            javafx.scene.Scene scene = new javafx.scene.Scene(fxmlLoader.load(), currentWidth, currentHeight);
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+            stage.setScene(scene);
+            stage.setMaximized(wasMaximized);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

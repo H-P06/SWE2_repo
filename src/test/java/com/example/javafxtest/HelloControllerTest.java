@@ -87,7 +87,7 @@ class HelloControllerTest {
 
     @Test
     void testPieRuleLogic() {
-        //lets pretend black places something at 0,0 (black is X) (white is O)
+        //let's pretend black places something at 0,0 (black is X) (white is O)
         QuaxEngine engine = controller.getEngine();
 
         //place piece

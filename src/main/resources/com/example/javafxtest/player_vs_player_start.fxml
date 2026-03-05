@@ -9,7 +9,7 @@
         <Label fx:id="labelGamemode" text="Player vs Player" styleClass="PVPtitle" />
         <Label fx:id="playerToPlay" text="Black to move" styleClass="playerToPlay" />
 
-        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="5" vgap="5">
+        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="0" vgap="0">
         </GridPane>
     </VBox>
 
