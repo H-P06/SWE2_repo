@@ -6,11 +6,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +21,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
 
 public class HelloController {
 
@@ -250,7 +248,16 @@ public class HelloController {
     void setPieRuleHelp() {
         pieButtonHelp.setVisible(false);
         pieButtonHelp.setOnAction(event -> {
-            //some sort of text explaining the pie rule
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Game Rules");
+            alert.setHeaderText("The Pie Rule");
+            alert.setContentText("The second player can choose to swap with the first player.\nThis balances the advantage the first move holds.");
+
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.getDialogPane().setPrefWidth(400);
+
+            alert.showAndWait();
+
             System.out.println("Pie rule help button pressed");
             updatePieButtonHelpVisibility();
         });
