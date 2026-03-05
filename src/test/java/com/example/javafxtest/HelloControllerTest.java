@@ -50,6 +50,8 @@ class HelloControllerTest {
         // set button since FXML isn't loading here
         controller.pieRuleButton = new Button();
 
+        controller.pieButtonHelp = new Button();
+
         //this is needed in pieRuleLogic test:
         controller.playerToPlay = new Label();
     }
@@ -108,5 +110,35 @@ class HelloControllerTest {
 
         //moves count should be incremented
         assertEquals(2, engine.getMoveCount());
+    }
+
+    //tests for the information button beside the pie rule button
+    @Test
+    void testInitialPieButtonHelpOnBeginning() {
+        controller.setPieRuleHelp();
+
+        assertFalse(controller.pieButtonHelp.isVisible(),"The button is to be invisible in the beginning");
+    }
+
+    @Test
+    void testPieButtonHelpVisibility() {
+        //pie rule will be visible after the first move
+        controller.numberMove = 1;
+
+        controller.updatePieButtonHelpVisibility();
+
+        assertTrue(controller.pieButtonHelp.isVisible(),"The button should be visible after 1 move");
+
+    }
+
+    @Test
+    void testPieButtonHelpVisibility2Moves() {
+        //pie rule will be visible after the first move
+        controller.numberMove = 2;
+
+        controller.updatePieButtonHelpVisibility();
+
+        assertFalse(controller.pieButtonHelp.isVisible(),"The button should not be visible when we have 2 moves");
+
     }
 }
