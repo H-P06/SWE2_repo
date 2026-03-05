@@ -16,7 +16,7 @@
             <Button fx:id="pieButtonHelp" visible="false" styleClass="pieButtonHelp" />
         </HBox>
 
-        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="2" vgap="2">
+        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="0" vgap="0">
         </GridPane>
     </VBox>
 
