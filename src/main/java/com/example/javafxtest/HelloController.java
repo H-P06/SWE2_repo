@@ -42,6 +42,7 @@ public class HelloController {
             }
             createBoard();
             setPieRuleButton();
+            setPieRuleHelp();
         });
     }
 
@@ -172,6 +173,7 @@ public class HelloController {
 
         numberMove++;
         updatePieRuleVisibility();
+        updatePieButtonHelpVisibility();
 
 
 
@@ -213,27 +215,44 @@ public class HelloController {
 
 
     @FXML Button pieRuleButton;
+    @FXML Button pieButtonHelp;
 
     void updatePieRuleVisibility() {
         if (numberMove == 1) {
             pieRuleButton.setVisible(true);
-            //pieRuleButton.setManaged(false);
             pieRuleButton.setText("Activate Pie Rule");
         } else {//when pie rule window is over
             pieRuleButton.setVisible(false);
-            //pieRuleButton.setManaged(false);
+        }
+    }
+
+    //for the question mark button
+    void updatePieButtonHelpVisibility() {
+        if (numberMove == 1) {
+            pieButtonHelp.setVisible(true);
+            pieButtonHelp.setText("?");
+        } else {//when pie rule window is over
+            pieButtonHelp.setVisible(false);
         }
     }
 
     void setPieRuleButton() {
         pieRuleButton.setVisible(false);
-        //pieRuleButton.setManaged(false);
 
         pieRuleButton.setOnAction(event -> {
             System.out.println("Pie Rule Activated!");
             System.out.println("no moves: " + numberMove);
             handlePieRuleLogic();
             updatePieRuleVisibility();
+        });
+    }
+
+    void setPieRuleHelp() {
+        pieButtonHelp.setVisible(false);
+        pieButtonHelp.setOnAction(event -> {
+            //some sort of text explaining the pie rule
+            System.out.println("Pie rule help button pressed");
+            updatePieButtonHelpVisibility();
         });
     }
 
@@ -252,8 +271,9 @@ public class HelloController {
         this.numberMove = engine.getMoveCount();
         updateLabel(false);
 
-        //so button is gone
+        //so buttons are gone
         updatePieRuleVisibility();
+        updatePieButtonHelpVisibility();
     }
 
     //will be used for test
