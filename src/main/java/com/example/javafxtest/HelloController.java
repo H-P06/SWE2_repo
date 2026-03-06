@@ -227,7 +227,9 @@ public class HelloController {
             gameOver = true;
             String winnerName;
             if (gameMode == 1) {
-                winnerName = winner.equals("X") ? "Player (Black)" : "Bot (White)";
+                boolean playerIsBlack = !pieRuleSwapped;
+                boolean playerWon = (winner.equals("X") && playerIsBlack) || (winner.equals("O") && !playerIsBlack);
+                winnerName = playerWon ? "Player" : "Bot";
             } else {
                 winnerName = winner.equals("X") ? "Black" : "White";
             }
