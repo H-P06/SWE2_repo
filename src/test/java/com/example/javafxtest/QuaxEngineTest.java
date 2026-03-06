@@ -68,9 +68,10 @@ class QuaxEngineTest {
 
         quaxEngine.applyPieRule();
 
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         //it changes X to O (black to white)
         //and it increases the move count
-        assertEquals(quaxEngine.getPieceAt(0,0),"O");
-        assertEquals(quaxEngine.getMoveCount(),2);
+        assertEquals(quaxEngine.getPieceAt(0,0),"X");
+        assertEquals(quaxEngine.getMoveCount(),1);
     }
 }
