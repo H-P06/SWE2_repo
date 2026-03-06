@@ -6,6 +6,7 @@ package com.example.javafxtest;
 public class QuaxEngine {
     private String[][] boardLogic = new String[22][22];
     private int totalNumberMoves = 0;
+    private String currentPlayer = "X";
 
     // Adjacency deltas for octagons (even,even): 4 orthogonal octagons + 4 diagonal diamonds
     private static final int[][] OCT_NEIGHBORS = {{2,0},{-2,0},{0,2},{0,-2},{1,1},{1,-1},{-1,1},{-1,-1}};
@@ -17,7 +18,8 @@ public class QuaxEngine {
             return false;
         }
         totalNumberMoves++;
-        boardLogic[x][y] = (totalNumberMoves % 2 == 1) ? "X" : "O";
+        boardLogic[x][y] = currentPlayer;
+        currentPlayer = currentPlayer.equals("X") ? "O" : "X";
         return true;
     }
 
@@ -33,6 +35,7 @@ public class QuaxEngine {
     public void reset() {
         boardLogic = new String[22][22];
         totalNumberMoves = 0;
+        currentPlayer = "X";
     }
 
     // Returns "X" if Black wins (top-to-bottom), "O" if White wins (left-to-right), null if no winner yet.
@@ -79,8 +82,10 @@ public class QuaxEngine {
     //to handle pie rule
     // Player 2 swaps sides: they take over as Black (X), player 1 becomes White (O).
     // The existing Black stone stays Black. Next move will be White (O).
+    // Pie rule counts as player 2's move (move 2), so increment the count.
     public void applyPieRule(){
-        totalNumberMoves = 1;
+        totalNumberMoves++;
+        // currentPlayer was "O" (White's turn) — keep it as "O" so next piece is White
     }
 
 }

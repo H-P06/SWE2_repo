@@ -109,8 +109,8 @@ class HelloControllerTest {
         // Black stone stays Black — player 2 takes over as Black
         assertEquals("X", engine.getPieceAt(0, 0), "Stone should remain X (Black); players swap, not the stone");
 
-        // Engine move count is 1 so next placed piece will be O (White)
-        assertEquals(1, engine.getMoveCount());
+        // Pie rule counts as move 2, so engine move count is 2
+        assertEquals(2, engine.getMoveCount());
 
         // Next move placed should be White (O), confirming turn has swapped
         engine.placePiece(2, 0);
