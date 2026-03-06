@@ -10,11 +10,11 @@
     <VBox alignment="CENTER" spacing="20.0">
         <Label fx:id="labelGamemode" text="Player vs Bot" styleClass="PVBtitle" />
         <Label fx:id="playerToPlay" text="Black (Player) to move" styleClass="playerToPlay" />
-
         <HBox alignment="CENTER" spacing="10.0">
             <Button fx:id="pieRuleButton" visible="false" />
             <Button fx:id="pieButtonHelp" visible="false" styleClass="pieButtonHelp" />
         </HBox>
+        <Label fx:id="pieRuleActivated" styleClass="pieRuleActivated" visible="false" />
 
         <GridPane fx:id="gameBoard" alignment="CENTER" hgap="0" vgap="0">
         </GridPane>

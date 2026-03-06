@@ -134,3 +134,9 @@
     -fx-text-fill: white;
     -fx-background-color:#9D7145FF;
 }
+
+.pieRuleActivated{
+    -fx-text-fill: #a17c53;
+    -fx-font-size:40px;
+    -fx-font-family: "Comic Sans MS";
+}

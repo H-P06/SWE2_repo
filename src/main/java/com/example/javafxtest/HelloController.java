@@ -2,6 +2,7 @@ package com.example.javafxtest;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
@@ -272,6 +273,7 @@ public class HelloController {
 
     @FXML Button pieRuleButton;
     @FXML Button pieButtonHelp;
+    @FXML Label pieRuleActivated;
 
     void updatePieRuleVisibility() {
         if (numberMove == 1) {
@@ -294,10 +296,21 @@ public class HelloController {
 
     void setPieRuleButton() {
         pieRuleButton.setVisible(false);
+        pieRuleButton.setVisible(false);
 
         pieRuleButton.setOnAction(event -> {
             System.out.println("Pie Rule Activated!");
             System.out.println("no moves: " + numberMove);
+            pieRuleActivated.setText("Pie Rule Activated!");
+            pieRuleActivated.setVisible(true);
+
+            //3 second wait
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+
+            delay.setOnFinished(e -> pieRuleActivated.setVisible(false));
+
+            delay.play();
+
             handlePieRuleLogic();
             updatePieRuleVisibility();
         });
