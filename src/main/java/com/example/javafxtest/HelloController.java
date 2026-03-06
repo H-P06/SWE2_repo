@@ -31,6 +31,7 @@ public class HelloController {
     Map<String, Button> buttonMap = new HashMap<>();
     private QuaxEngine engine = new QuaxEngine();
     private boolean gameOver = false;
+    private boolean pieRuleSwapped = false;
 
 
     public static int gameMode = -1;  //1 for PvB, 2 for PvP
@@ -106,6 +107,7 @@ public class HelloController {
         gameBoard.setMaxHeight(Region.USE_PREF_SIZE);
         engine.reset();
         gameOver = false;
+        pieRuleSwapped = false;
         buttonMap.clear();
         gameBoard.getChildren().clear();
         gameBoard.getColumnConstraints().clear();
@@ -173,7 +175,12 @@ public class HelloController {
 
     private void updateLabel(boolean lastWasBlack) {
         if (gameMode == 1) {
-            playerToPlay.setText(lastWasBlack ? "Bot to play" : "Player (Black) to play");
+            if (pieRuleSwapped) {
+                // After swap: Bot is Black, Player is White
+                playerToPlay.setText(lastWasBlack ? "Player (White) to play" : "Bot to play");
+            } else {
+                playerToPlay.setText(lastWasBlack ? "Bot to play" : "Player (Black) to play");
+            }
         } else {
             playerToPlay.setText(lastWasBlack ? "White to play" : "Black to play");
         }
@@ -213,12 +220,7 @@ public class HelloController {
         clickedButton.getStyleClass().removeAll("whiteButtonPressed", "blackButtonPressed");
         clickedButton.getStyleClass().add(moveClass);
 
-        //Update label (keep your existing gameMode logic)
-        if (gameMode == 1) {
-            playerToPlay.setText(isBlackMove ? "Bot to play" : "Player (Black) to play");
-        } else {
-            playerToPlay.setText(nextPlayer + " to play");
-        }
+        updateLabel(isBlackMove);
 
         String winner = engine.checkWinner();
         if (winner != null) {
@@ -336,18 +338,13 @@ public class HelloController {
 
     void handlePieRuleLogic(){
         engine.applyPieRule();
+        pieRuleSwapped = true;
 
-        for (Map.Entry<String, Button> entry : buttonMap.entrySet()) {
-            Button btn = entry.getValue();
-            if (btn.getStyleClass().contains("blackButtonPressed")) {
-                btn.getStyleClass().remove("blackButtonPressed");
-                btn.getStyleClass().add("whiteButtonPressed");
-                break;
-            }
-        }
-
-        this.numberMove = engine.getMoveCount();
-        updateLabel(false);
+        // The existing Black stone stays Black — player 2 takes over as Black.
+        // numberMove set to 2 so visibility checks hide the pie rule buttons.
+        this.numberMove = 2;
+        // Next move is White (O), so lastWasBlack = true
+        updateLabel(true);
 
         //so buttons are gone
         updatePieRuleVisibility();

@@ -77,18 +77,10 @@ public class QuaxEngine {
     }
 
     //to handle pie rule
+    // Player 2 swaps sides: they take over as Black (X), player 1 becomes White (O).
+    // The existing Black stone stays Black. Next move will be White (O).
     public void applyPieRule(){
-        //find the one piece on the board
-        for(int i = 0; i < 22; i++){
-            for(int j = 0; j < 22; j++){
-                //if X is in that spot
-                if("X".equals(boardLogic[i][j])){
-                    boardLogic[i][j] = "O";
-                    totalNumberMoves = 2;
-                    return;
-                }
-            }
-        }
+        totalNumberMoves = 1;
     }
 
 }
