@@ -1,7 +1,7 @@
 package com.example.javafxtest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class QuaxEngineTest {
@@ -68,10 +68,44 @@ class QuaxEngineTest {
 
         quaxEngine.applyPieRule();
 
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //it changes X to O (black to white)
-        //and it increases the move count
+        //the move shouldn't change (just to the change to adapt to the actual pie rule is correct)
+        //move count increased
         assertEquals(quaxEngine.getPieceAt(0,0),"X");
-        assertEquals(quaxEngine.getMoveCount(),1);
+        assertEquals(quaxEngine.getMoveCount(),2);
     }
+
+    private QuaxEngine engine;
+
+    @BeforeEach
+    void setUp() {
+        engine = new QuaxEngine();
+    }
+
+    @Test
+    void testBlackWinVertical() {
+        // Place a vertical line of Black (X) pieces from top to bottom
+        // Black moves on even turns: 0, 2, 4...
+        for (int y = 0; y <= 22; y += 1) {
+            engine.placePiece(0, y); // Black move
+            engine.placePiece(2, y); // White dummy move (to keep turns alternating)
+        }
+        assertEquals("X", engine.checkWinner(), "Black should win with a vertical line");
+    }
+
+    @Test
+    void testWhiteWinHorizontal() {
+        // Place a horizontal line of White (O) pieces from left to right
+        for (int x = 0; x <= 22; x += 2) {
+            engine.placePiece(x, 5); // Black dummy move
+            engine.placePiece(x, 0);    // White move
+        }
+        assertEquals("O", engine.checkWinner(), "White should win with a horizontal line");
+    }
+
+    @Test
+    void testNoWinnerInitially() {
+        assertNull(engine.checkWinner(), "New game should have no winner");
+    }
+
+
 }

@@ -107,7 +107,7 @@ class HelloControllerTest {
         controller.handlePieRuleLogic();
 
         // Black stone stays Black — player 2 takes over as Black
-        assertEquals("X", engine.getPieceAt(0, 0), "Stone should remain X (Black); players swap, not the stone");
+        assertEquals("X", engine.getPieceAt(0, 0), "the piece should remain X (Black); players swap, not the piece");
 
         // Pie rule counts as move 2, so engine move count is 2
         assertEquals(2, engine.getMoveCount());
