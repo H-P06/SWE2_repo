@@ -341,8 +341,8 @@ public class HelloController {
         pieRuleSwapped = true;
 
         // The existing Black stone stays Black — player 2 takes over as Black.
-        // numberMove set to 2 so visibility checks hide the pie rule buttons.
-        this.numberMove = 2;
+        // Pie rule counts as move 2, so sync numberMove from engine.
+        this.numberMove = engine.getMoveCount();
         // Next move is White (O), so lastWasBlack = true
         updateLabel(true);
 
