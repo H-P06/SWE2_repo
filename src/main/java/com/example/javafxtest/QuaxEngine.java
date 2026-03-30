@@ -79,6 +79,18 @@ public class QuaxEngine {
         return false;
     }
 
+    public String getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public String[][] getBoardCopy() {
+        String[][] copy = new String[22][22];
+        for (int i = 0; i < 22; i++) {
+            copy[i] = boardLogic[i].clone();
+        }
+        return copy;
+    }
+
     //to handle pie rule
     // Player 2 swaps sides: they take over as Black (X), player 1 becomes White (O).
     // The existing Black stone stays Black. Next move will be White (O).
