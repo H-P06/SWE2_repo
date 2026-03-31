@@ -234,7 +234,32 @@ public class HelloController {
                 winnerName = winner.equals("X") ? "Black" : "White";
             }
             playerToPlay.setText(winnerName + " wins!");
+            return;
         }
+
+        // In PvB mode, trigger the bot when it's its turn
+        if (gameMode == 1) {
+            String botPiece = pieRuleSwapped ? "X" : "O";
+            if (engine.getCurrentPlayer().equals(botPiece)) {
+                scheduleBotMove(botPiece);
+            }
+        }
+    }
+
+    private void scheduleBotMove(String botPiece) {
+        String[][] boardSnapshot = engine.getBoardCopy();
+        int[] move = QuaxBot.chooseBestMove(boardSnapshot, botPiece);
+        if (move == null) return;
+
+        PauseTransition delay = new PauseTransition(Duration.millis(400));
+        delay.setOnFinished(e -> {
+            if (gameOver) return;
+            Button btn = buttonMap.get(move[0] + "," + move[1]);
+            if (btn != null) {
+                handleMove(move[0], move[1], btn);
+            }
+        });
+        delay.play();
     }
 
     private void setupKeyHandlers() {
@@ -280,7 +305,7 @@ public class HelloController {
     @FXML Label pieRuleActivated;
 
     void updatePieRuleVisibility() {
-        if (numberMove == 1) {
+        if (numberMove == 1 && gameMode == 2) {
             pieRuleButton.setVisible(true);
             pieRuleButton.setText("Activate Pie Rule");
         } else {//when pie rule window is over
@@ -290,7 +315,7 @@ public class HelloController {
 
     //for the question mark button
     void updatePieButtonHelpVisibility() {
-        if (numberMove == 1) {
+        if (numberMove == 1 && gameMode == 2) {
             pieButtonHelp.setVisible(true);
             pieButtonHelp.setText("?");
         } else {//when pie rule window is over
