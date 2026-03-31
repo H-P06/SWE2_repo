@@ -32,6 +32,8 @@ public class HelloController {
     private QuaxEngine engine = new QuaxEngine();
     private boolean gameOver = false;
     private boolean pieRuleSwapped = false;
+    boolean isSecondPlayerHuman = pieRuleSwapped;
+
 
 
     public static int gameMode = -1;  //1 for PvB, 2 for PvP
@@ -50,6 +52,7 @@ public class HelloController {
             createBoard();
             setPieRuleButton();
             setPieRuleHelp();
+            randomColourAssign();
         });
     }
 
@@ -75,26 +78,27 @@ public class HelloController {
         }
     }
 
-    @FXML
-    protected void onButtonClickPVP(ActionEvent event) {
-        try {
-            gameMode = 2;
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            double currentWidth = stage.getWidth();
-            double currentHeight = stage.getHeight();
-            boolean wasMaximized = stage.isMaximized();
-
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("player_vs_player_start.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
-            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.setMaximized(wasMaximized);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    //this is no longer needed
+//    @FXML
+//    protected void onButtonClickPVP(ActionEvent event) {
+//        try {
+//            gameMode = 2;
+//            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+//            double currentWidth = stage.getWidth();
+//            double currentHeight = stage.getHeight();
+//            boolean wasMaximized = stage.isMaximized();
+//
+//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("player_vs_player_start.fxml"));
+//            Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
+//            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+//
+//            stage.setScene(scene);
+//            stage.setMaximized(wasMaximized);
+//            stage.show();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @FXML
     private GridPane gameBoard;
@@ -197,6 +201,7 @@ public class HelloController {
     @FXML Label playerToPlay;
 
     private void handleMove(int x, int y, Button clickedButton) {
+
         if (gameOver) return;
 
         System.out.println("Move: " + engine.getMoveCount());
@@ -237,7 +242,8 @@ public class HelloController {
             return;
         }
 
-        // In PvB mode, trigger the bot when it's its turn
+        // trigger the bot when it's its turn
+        // the gameMode is redundant now
         if (gameMode == 1) {
             String botPiece = pieRuleSwapped ? "X" : "O";
             if (engine.getCurrentPlayer().equals(botPiece)) {
@@ -305,7 +311,7 @@ public class HelloController {
     @FXML Label pieRuleActivated;
 
     void updatePieRuleVisibility() {
-        if (numberMove == 1 && gameMode == 2) {
+        if (numberMove == 1 && isSecondPlayerHuman) {
             pieRuleButton.setVisible(true);
             pieRuleButton.setText("Activate Pie Rule");
         } else {//when pie rule window is over
@@ -315,7 +321,7 @@ public class HelloController {
 
     //for the question mark button
     void updatePieButtonHelpVisibility() {
-        if (numberMove == 1 && gameMode == 2) {
+        if (numberMove == 1 && isSecondPlayerHuman) {
             pieButtonHelp.setVisible(true);
             pieButtonHelp.setText("?");
         } else {//when pie rule window is over
@@ -365,7 +371,7 @@ public class HelloController {
 
     void handlePieRuleLogic(){
         engine.applyPieRule();
-        pieRuleSwapped = true;
+        pieRuleSwapped = !pieRuleSwapped;
 
         // The existing Black stone stays Black — player 2 takes over as Black.
         // Pie rule counts as move 2, so sync numberMove from engine.
@@ -376,10 +382,38 @@ public class HelloController {
         //so buttons are gone
         updatePieRuleVisibility();
         updatePieButtonHelpVisibility();
+
+        String botPiece = pieRuleSwapped ? "X" : "O";
+        // After Pie Rule, it's always the O player's turn
+        if (botPiece.equals("O")) {
+            scheduleBotMove("O");
+        }
     }
 
     //will be used for test
     public QuaxEngine getEngine() {
         return  this.engine;
     }
+
+
+    //random assign white or black
+    void randomColourAssign(){
+        //picks between 0 and 1
+        int randomNum = (int)(Math.random() * 2);
+
+        //player is first
+        if(randomNum == 0){
+            pieRuleSwapped = false;
+            updateLabel(false);
+        }
+        else{//player is second
+            pieRuleSwapped = true;
+            updateLabel(false);
+
+            scheduleBotMove("X");
+        }
+
+
+    }
+
 } // end of class

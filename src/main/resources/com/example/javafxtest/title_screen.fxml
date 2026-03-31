@@ -20,5 +20,5 @@
 
     <!-- when you click on the buttons, execute this method (its going to switch to the right scene)-->
     <Button text="Player vs Bot" onAction="#onButtonClickPVB"/>
-    <Button text="Player vs Player" onAction="#onButtonClickPVP"/>
+<!--    <Button text="Player vs Player" onAction="#onButtonClickPVP"/>-->
 </VBox>

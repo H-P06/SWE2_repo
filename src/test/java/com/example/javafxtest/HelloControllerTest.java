@@ -67,11 +67,11 @@ class HelloControllerTest {
     void testPieRuleVisibility() {
         //pie rule will be visible after the first move
         controller.numberMove = 1;
+        controller.isSecondPlayerHuman = true;  //new addition
 
         controller.updatePieRuleVisibility();
 
         assertTrue(controller.pieRuleButton.isVisible(),"The button should be visible after 1 move");
-
     }
 
     @Test
@@ -129,6 +129,7 @@ class HelloControllerTest {
     void testPieButtonHelpVisibility() {
         //pie rule will be visible after the first move
         controller.numberMove = 1;
+        controller.isSecondPlayerHuman = true;  //new addition
 
         controller.updatePieButtonHelpVisibility();
 
