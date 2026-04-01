@@ -24,7 +24,7 @@ public class QuaxEngine {
     }
 
     public String getPieceAt(int x, int y) {
-        System.out.println(x + "," + y);
+        //System.out.println(x + "," + y);
         return boardLogic[x][y];
     }
 

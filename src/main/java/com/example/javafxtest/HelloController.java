@@ -204,7 +204,7 @@ public class HelloController {
 
         if (gameOver) return;
 
-        System.out.println("Move: " + engine.getMoveCount());
+        //System.out.println("Move: " + engine.getMoveCount());
         boolean success = engine.placePiece(x, y);
 
         if (!success) return; // valid move or spot taken
@@ -334,8 +334,8 @@ public class HelloController {
         pieRuleButton.setVisible(false);
 
         pieRuleButton.setOnAction(event -> {
-            System.out.println("Pie Rule Activated!");
-            System.out.println("no moves: " + numberMove);
+            //System.out.println("Pie Rule Activated!");
+            //System.out.println("no moves: " + numberMove);
             pieRuleActivated.setText("Pie Rule Activated!");
             pieRuleActivated.setVisible(true);
 
@@ -364,7 +364,7 @@ public class HelloController {
 
             alert.showAndWait();
 
-            System.out.println("Pie rule help button pressed");
+            //System.out.println("Pie rule help button pressed");
             updatePieButtonHelpVisibility();
         });
     }
