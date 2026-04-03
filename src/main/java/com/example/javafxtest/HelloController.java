@@ -182,11 +182,12 @@ public class HelloController {
 
     private void updateLabel(boolean lastWasBlack) {
         if (gameMode == 1) {
-            if (pieRuleSwapped) {
-                // After swap: Bot is Black, Player is White
-                playerToPlay.setText(lastWasBlack ? "Player (White) to play" : "Bot to play");
+            boolean humanIsCurrentlyBlack = !(isSecondPlayerHuman ^ pieRuleSwapped);
+
+            if (lastWasBlack) {
+                playerToPlay.setText(humanIsCurrentlyBlack ? "Bot to play (White)" : "Player (White) to play");
             } else {
-                playerToPlay.setText(lastWasBlack ? "Bot to play" : "Player (Black) to play");
+                playerToPlay.setText(humanIsCurrentlyBlack ? "Player (Black) to play" : "Bot to play (Black)");
             }
         } else {
             playerToPlay.setText(lastWasBlack ? "White to play" : "Black to play");
@@ -207,10 +208,13 @@ public class HelloController {
 
         if (gameOver) return;
 
-        //System.out.println("Move: " + engine.getMoveCount());
-        boolean success = engine.placePiece(x, y);
+        if (pieRuleButton.isVisible()) {
+            pieRuleButton.setVisible(false);
+            pieButtonHelp.setVisible(false);
+        }
 
-        if (!success) return; // valid move or spot taken
+        boolean success = engine.placePiece(x, y);
+        if (!success) return;
 
         numberMove++;
         updatePieRuleVisibility();
@@ -218,7 +222,6 @@ public class HelloController {
 
 
 
-        //result from the engine to update the UI
         String piece = engine.getPieceAt(x, y);
         boolean isBlackMove = piece.equals("X");
 
@@ -235,7 +238,8 @@ public class HelloController {
             gameOver = true;
             String winnerName;
             if (gameMode == 1) {
-                boolean playerIsBlack = !pieRuleSwapped;
+                boolean playerIsBlack = !(isSecondPlayerHuman ^ pieRuleSwapped);
+
                 boolean playerWon = (winner.equals("X") && playerIsBlack) || (winner.equals("O") && !playerIsBlack);
                 winnerName = playerWon ? "Player" : "Bot";
             } else {
@@ -245,10 +249,9 @@ public class HelloController {
             return;
         }
 
-        // trigger the bot when it's its turn
-        // the gameMode is redundant now
         if (gameMode == 1) {
-            String botPiece = pieRuleSwapped ? "X" : "O";
+            String botPiece = (isSecondPlayerHuman ^ pieRuleSwapped) ? "X" : "O";
+
             if (engine.getCurrentPlayer().equals(botPiece)) {
                 scheduleBotMove(botPiece);
             }
@@ -373,20 +376,19 @@ public class HelloController {
         engine.applyPieRule();
         pieRuleSwapped = !pieRuleSwapped;
 
-        // The existing Black stone stays Black — player 2 takes over as Black.
-        // Pie rule counts as move 2, so sync numberMove from engine.
         this.numberMove = engine.getMoveCount();
-        // Next move is White (O), so lastWasBlack = true
-        updateLabel(true);
+        updateLabel(true); // Black (X) just moved, so lastWasBlack = true
 
-        //so buttons are gone
         updatePieRuleVisibility();
         updatePieButtonHelpVisibility();
 
-        String botPiece = pieRuleSwapped ? "X" : "O";
-        // After Pie Rule, it's always the O player's turn
-        if (botPiece.equals("O")) {
-            scheduleBotMove("O");
+        if (gameMode == 1) {
+            // After a swap, if the Human is now Black (X), the Bot must be White (O)
+            String botPiece = (isSecondPlayerHuman ^ pieRuleSwapped) ? "X" : "O";
+
+            if (engine.getCurrentPlayer().equals(botPiece)) {
+                scheduleBotMove(botPiece);
+            }
         }
     }
 
@@ -397,23 +399,21 @@ public class HelloController {
 
 
     //random assign white or black
-    void randomColourAssign(){
-        //picks between 0 and 1
+    void randomColourAssign() {
         int randomNum = (int)(Math.random() * 2);
 
-        //player is first
-        if(randomNum == 0){
+        if (randomNum == 0) {
+            isSecondPlayerHuman = false;
             pieRuleSwapped = false;
             updateLabel(false);
-        }
-        else{//player is second
-            pieRuleSwapped = true;
+        } else {
+            isSecondPlayerHuman = true;
+            pieRuleSwapped = false;
             updateLabel(false);
 
+            // Bot takes the first move as Black (X)
             scheduleBotMove("X");
         }
-
-
     }
 
 } // end of class
