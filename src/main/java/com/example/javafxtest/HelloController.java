@@ -81,28 +81,6 @@ public class HelloController {
         }
     }
 
-    //this is no longer needed
-//    @FXML
-//    protected void onButtonClickPVP(ActionEvent event) {
-//        try {
-//            gameMode = 2;
-//            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//            double currentWidth = stage.getWidth();
-//            double currentHeight = stage.getHeight();
-//            boolean wasMaximized = stage.isMaximized();
-//
-//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("player_vs_player_start.fxml"));
-//            Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
-//            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-//
-//            stage.setScene(scene);
-//            stage.setMaximized(wasMaximized);
-//            stage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @FXML
     private GridPane gameBoard;
     public int numberMove = 0;
