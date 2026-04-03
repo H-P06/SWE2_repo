@@ -31,7 +31,7 @@ public class HelloController {
     Map<String, Button> buttonMap = new HashMap<>();
     private QuaxEngine engine = new QuaxEngine();
     private boolean gameOver = false;
-    private boolean pieRuleSwapped = false;
+    boolean pieRuleSwapped = false;
     boolean isSecondPlayerHuman = pieRuleSwapped;
 
 
@@ -62,6 +62,9 @@ public class HelloController {
         try {
             gameMode = 1;
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            stage.setTitle("Quax - Player vs Bot");
+
             double currentWidth = stage.getWidth();
             double currentHeight = stage.getHeight();
             boolean wasMaximized = stage.isMaximized();

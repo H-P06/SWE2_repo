@@ -191,4 +191,55 @@ class HelloControllerTest {
 
         assertEquals(-1, HelloController.gameMode, "The game mode should reset to -1 upon exit.");
     }
+
+    @Test
+    void testBotChoosesWinningMove() {
+        String[][] board = new String[22][22];
+        // Create a path of Black (X) from y=0 to y=18
+        for (int y = 0; y <= 18; y += 2) {
+            board[10][y] = "X";
+        }
+        // The only move left to win (top-to-bottom) is at (10, 20)
+        int[] move = QuaxBot.chooseBestMove(board, "X");
+
+        assertNotNull(move);
+        assertEquals(10, move[0]);
+        assertEquals(20, move[1]);
+    }
+    @Test
+    void testBotMakesValidFirstMove() {
+        String[][] emptyBoard = new String[22][22];
+        int[] move = QuaxBot.chooseBestMove(emptyBoard, "X");
+
+        assertNotNull(move);
+        // Check if move is within bounds
+        assertTrue(move[0] >= 0 && move[0] <= 20);
+        assertTrue(move[1] >= 0 && move[1] <= 20);
+        // Verify it's a valid Quax coordinate (even/even or odd/odd)
+        assertTrue((move[0] % 2 == 0 && move[1] % 2 == 0) || (move[0] % 2 == 1 && move[1] % 2 == 1));
+    }
+    @Test
+    void testRandomColourAssignLogic() {
+        HelloController controller = new HelloController();
+
+        controller.playerToPlay = new javafx.scene.control.Label();
+
+        // Initialize necessary components for the test
+        controller.randomColourAssign();
+
+        if (controller.pieRuleSwapped) {
+            // CASE: Player is second (randomNum == 1)
+            // The bot should have been triggered to play as Black ("X")
+            // We verify that the engine now expects the bot to play if the pieRuleSwapped is true
+            assertTrue(controller.pieRuleSwapped);
+            assertEquals("X", controller.getEngine().getCurrentPlayer());
+        } else {
+            // CASE: Player is first (randomNum == 0)
+            // No bot move should have been scheduled
+            // The engine should expect pie rule start to be false
+            assertEquals(0, controller.getEngine().getMoveCount());
+            assertFalse(controller.pieRuleSwapped);
+            assertEquals("X", controller.getEngine().getCurrentPlayer());
+        }
+    }
 }
