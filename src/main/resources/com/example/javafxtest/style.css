@@ -140,3 +140,17 @@
     -fx-font-size:40px;
     -fx-font-family: "Comic Sans MS";
 }
+
+.showStratDM{
+    -fx-font-family: "Comic Sans MS";
+    -fx-font-size: 10pt;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+    -fx-background-color:#9D7145FF;
+}
+
+.devModeLabel{
+    -fx-text-fill: #800808;
+    -fx-font-size:40px;
+    -fx-font-family: "Comic Sans MS";
+}
