@@ -83,11 +83,78 @@ public class QuaxBot {
     }
 
     /* return copy of board with board[px][py] set to player. */
-    private static String[][] withPiece(String[][] board, int px, int py, String player) {
+    public static String[][] withPiece(String[][] board, int px, int py, String player) {
         String[][] copy = new String[22][22];
         for (int i = 0; i < 22; i++) copy[i] = board[i].clone();
         copy[px][py] = player;
         return copy;
+    }
+
+    /*
+     * Returns the tiles on the bot's shortest winning path for the given board.
+     * Includes both already-owned tiles (cost 0) and empty tiles to fill (cost 1).
+     * Returns an empty list if no path exists.
+     */
+    public static List<int[]> getShortestPathTiles(String[][] board, String player) {
+        boolean topToBottom = player.equals("X");
+        String  opponent    = player.equals("X") ? "O" : "X";
+
+        int[][] dist = new int[22][22];
+        for (int[] row : dist) Arrays.fill(row, INF);
+
+        // prev[x][y]: null = unvisited, {-1,-1} = start node, {px,py} = predecessor
+        int[][][] prev = new int[22][22][];
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+
+        for (int i = 0; i <= 20; i += 2) {
+            int sx = topToBottom ? i : 0;
+            int sy = topToBottom ? 0 : i;
+            if (opponent.equals(board[sx][sy])) continue;
+            int cost = (board[sx][sy] == null) ? 1 : 0;
+            if (cost < dist[sx][sy]) {
+                dist[sx][sy] = cost;
+                prev[sx][sy] = new int[]{-1, -1};
+                pq.offer(new int[]{cost, sx, sy});
+            }
+        }
+
+        int[] goalTile = null;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int d = cur[0], cx = cur[1], cy = cur[2];
+            if (d > dist[cx][cy]) continue;
+
+            if ((topToBottom && cy == 20) || (!topToBottom && cx == 20)) {
+                goalTile = new int[]{cx, cy};
+                break;
+            }
+
+            int[][] nbrs = (cx % 2 == 0 && cy % 2 == 0) ? OCT_NEIGHBORS : DIAMOND_NEIGHBORS;
+            for (int[] delta : nbrs) {
+                int nx = cx + delta[0], ny = cy + delta[1];
+                if (!isValid(nx, ny)) continue;
+                if (opponent.equals(board[nx][ny])) continue;
+                int nd = d + (board[nx][ny] == null ? 1 : 0);
+                if (nd < dist[nx][ny]) {
+                    dist[nx][ny] = nd;
+                    prev[nx][ny] = new int[]{cx, cy};
+                    pq.offer(new int[]{nd, nx, ny});
+                }
+            }
+        }
+
+        if (goalTile == null) return Collections.emptyList();
+
+        List<int[]> path = new ArrayList<>();
+        int[] cur = goalTile;
+        while (cur != null) {
+            path.add(cur);
+            int[] p = prev[cur[0]][cur[1]];
+            if (p == null || p[0] == -1) break;
+            cur = p;
+        }
+        return path;
     }
 
     /*

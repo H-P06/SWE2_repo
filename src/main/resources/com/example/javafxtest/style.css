@@ -153,4 +153,18 @@
     -fx-text-fill: #800808;
     -fx-font-size:40px;
     -fx-font-family: "Comic Sans MS";
+    -fx-alignment: center;
+    -fx-padding: 8 0 0 0;
+}
+
+.board-tile.botIntendedTile {
+    -fx-shape: "M 14,0 H 36 L 50,14 V 36 L 36,50 H 14 L 0,36 V 14 Z";
+    -fx-background-color: #00cc55 !important;
+    -fx-background-insets: 0;
+}
+
+.diamond-tile.botIntendedTile {
+    -fx-shape: "M 0,25 L 25,0 L 50,25 L 25,50 Z";
+    -fx-background-color: #00cc55 !important;
+    -fx-background-insets: 0;
 }

@@ -18,10 +18,8 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -37,6 +35,9 @@ public class HelloController {
 
 
     @FXML private Button showStratDM;
+    private final List<Button> winPathHighlights = new ArrayList<>();
+    private final List<String> savedWinPathStyles = new ArrayList<>();
+    private int[] scheduledBotMove = null;
 
     //THE CODE TO TURN ON DEV MODE
     private final List<KeyCode> SECRET_CODE = List.of(KeyCode.D, KeyCode.E, KeyCode.V);
@@ -71,6 +72,7 @@ public class HelloController {
                 createBoard();
                 setPieRuleButton();
                 setPieRuleHelp();
+                setupShowStratButton();
                 randomColourAssign();
             }
         });
@@ -203,12 +205,13 @@ public class HelloController {
     @FXML Label playerToPlay;
 
     private void handleMove(int x, int y, Button clickedButton) {
-
         if (gameOver) return;
 
         if (pieRuleButton.isVisible()) {
             pieRuleButton.setVisible(false);
+            pieRuleButton.setManaged(false);
             pieButtonHelp.setVisible(false);
+            pieButtonHelp.setManaged(false);
         }
 
         boolean success = engine.placePiece(x, y);
@@ -261,12 +264,22 @@ public class HelloController {
         int[] move = QuaxBot.chooseBestMove(boardSnapshot, botPiece);
         if (move == null) return;
 
+        scheduledBotMove = move;
+        if (devModeLabel != null && devModeLabel.isVisible()) {
+            showBotWinPath();
+        }
+
         PauseTransition delay = new PauseTransition(Duration.millis(400));
         delay.setOnFinished(e -> {
             if (gameOver) return;
+            scheduledBotMove = null;
+            clearWinPathHighlights();
             Button btn = buttonMap.get(move[0] + "," + move[1]);
             if (btn != null) {
                 handleMove(move[0], move[1], btn);
+            }
+            if (!gameOver && devModeLabel != null && devModeLabel.isVisible()) {
+                showBotWinPath();
             }
         });
         delay.play();
@@ -329,34 +342,38 @@ public class HelloController {
     void updatePieRuleVisibility() {
         if (numberMove == 1 && isSecondPlayerHuman) {
             pieRuleButton.setVisible(true);
+            pieRuleButton.setManaged(true);
             pieRuleButton.setText("Activate Pie Rule");
-        } else {//when pie rule window is over
+        } else {
             pieRuleButton.setVisible(false);
+            pieRuleButton.setManaged(false);
         }
     }
 
-    //for the question mark button
     void updatePieButtonHelpVisibility() {
         if (numberMove == 1 && isSecondPlayerHuman) {
             pieButtonHelp.setVisible(true);
+            pieButtonHelp.setManaged(true);
             pieButtonHelp.setText("?");
-        } else {//when pie rule window is over
+        } else {
             pieButtonHelp.setVisible(false);
+            pieButtonHelp.setManaged(false);
         }
     }
 
     void setPieRuleButton() {
         pieRuleButton.setVisible(false);
-        pieRuleButton.setVisible(false);
+        pieRuleButton.setManaged(false);
 
         pieRuleButton.setOnAction(event -> {
             pieRuleActivated.setText("Pie Rule Activated!");
             pieRuleActivated.setVisible(true);
+            pieRuleActivated.setManaged(true);
 
             //3 second wait
             PauseTransition delay = new PauseTransition(Duration.seconds(3));
 
-            delay.setOnFinished(e -> pieRuleActivated.setVisible(false));
+            delay.setOnFinished(e -> { pieRuleActivated.setVisible(false); pieRuleActivated.setManaged(false); });
 
             delay.play();
 
@@ -367,6 +384,7 @@ public class HelloController {
 
     void setPieRuleHelp() {
         pieButtonHelp.setVisible(false);
+        pieButtonHelp.setManaged(false);
         pieButtonHelp.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Game Rules");
@@ -432,9 +450,9 @@ public class HelloController {
             if (showStratDM != null && showStratDM.isVisible()) {
                 showStratDM.setVisible(false);
                 showStratDM.setManaged(false);
-
                 devModeLabel.setVisible(false);
                 devModeLabel.setManaged(false);
+                clearWinPathHighlights();
             }
             codeIndex = 0;
             return;
@@ -464,5 +482,39 @@ public class HelloController {
     }
 
 
+
+    private void setupShowStratButton() {
+        if (showStratDM == null) return;
+        showStratDM.setOnAction(e -> showBotWinPath());
+    }
+
+    private void showBotWinPath() {
+        clearWinPathHighlights();
+        if (gameOver || gameMode != 1) return;
+
+        String botPiece = (isSecondPlayerHuman ^ pieRuleSwapped) ? "X" : "O";
+        String[][] board = engine.getBoardCopy();
+        if (scheduledBotMove != null) {
+            board = QuaxBot.withPiece(board, scheduledBotMove[0], scheduledBotMove[1], botPiece);
+        }
+        List<int[]> path = QuaxBot.getShortestPathTiles(board, botPiece);
+
+        for (int[] tile : path) {
+            Button btn = buttonMap.get(tile[0] + "," + tile[1]);
+            if (btn != null) {
+                savedWinPathStyles.add(btn.getStyle());
+                btn.setStyle("-fx-background-color: #00cc55; -fx-background-insets: 0;");
+                winPathHighlights.add(btn);
+            }
+        }
+    }
+
+    private void clearWinPathHighlights() {
+        for (int i = 0; i < winPathHighlights.size(); i++) {
+            winPathHighlights.get(i).setStyle(savedWinPathStyles.get(i));
+        }
+        winPathHighlights.clear();
+        savedWinPathStyles.clear();
+    }
 
 } // end of class
