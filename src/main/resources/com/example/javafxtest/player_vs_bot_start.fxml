@@ -3,23 +3,19 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Button?>
 
-<?import javafx.scene.control.Button?>
 <StackPane fx:id="rootStackPane" xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.example.javafxtest.HelloController">
 
-    <VBox alignment="CENTER" spacing="20.0">
-        <Label fx:id="labelGamemode" text="Player vs Bot" styleClass="PVBtitle" />
+    <VBox alignment="CENTER" spacing="10.0">
+        <Label fx:id="devModeLabel" visible="false" managed="false" styleClass="devModeLabel" maxWidth="Infinity" />
         <Label fx:id="playerToPlay" text="Black (Player) to move" styleClass="playerToPlay" />
         <HBox alignment="CENTER" spacing="10.0">
-            <Button fx:id="pieRuleButton" visible="false" />
-            <Button fx:id="pieButtonHelp" visible="false" styleClass="pieButtonHelp" />
+            <Button fx:id="pieRuleButton" visible="false" managed="false" />
+            <Button fx:id="pieButtonHelp" visible="false" managed="false" styleClass="pieButtonHelp" />
             <Button fx:id="showStratDM" visible="false" styleClass="showStratDM" managed="false" />
-            <Label fx:id="devModeLabel" visible="false" styleClass="devModeLabel" managed="false" />
         </HBox>
-        <Label fx:id="pieRuleActivated" styleClass="pieRuleActivated" visible="false" />
-
-        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="0" vgap="0">
-        </GridPane>
+        <Label fx:id="pieRuleActivated" styleClass="pieRuleActivated" visible="false" managed="false" />
+        <GridPane fx:id="gameBoard" alignment="CENTER" hgap="0" vgap="0" />
     </VBox>
 
 </StackPane>
