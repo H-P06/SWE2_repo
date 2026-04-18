@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javafx.application.Platform;
@@ -35,6 +36,16 @@ public class HelloController {
     boolean isSecondPlayerHuman = pieRuleSwapped;
 
 
+    @FXML private Button showStratDM;
+
+    //THE CODE TO TURN ON DEV MODE
+    private final List<KeyCode> SECRET_CODE = List.of(KeyCode.D, KeyCode.E, KeyCode.V);
+    private int codeIndex = 0;
+    @FXML private Label devModeLabel;
+
+    private Timeline escapeTimeline;
+
+
 
     public static int gameMode = -1;  //1 for PvB, 2 for PvP
 
@@ -43,16 +54,25 @@ public class HelloController {
     @FXML
     public void initialize() {
         Platform.runLater(() -> {
-            if (gameBoard == null || rootStackPane == null) {
-                if (titleRoot != null) {
-                    setupEscapeExit(titleRoot.getScene(), Platform::exit);
-                }
-                return;
+            Scene scene = null;
+            if (gameBoard != null && gameBoard.getScene() != null) {
+                scene = gameBoard.getScene();
+            } else if (titleRoot != null && titleRoot.getScene() != null) {
+                scene = titleRoot.getScene();
             }
-            createBoard();
-            setPieRuleButton();
-            setPieRuleHelp();
-            randomColourAssign();
+
+            if (scene != null) {
+                setupEscapeExit(scene, Platform::exit);
+
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleDevModeCode);
+            }
+
+            if (gameBoard != null && rootStackPane != null) {
+                createBoard();
+                setPieRuleButton();
+                setPieRuleHelp();
+                randomColourAssign();
+            }
         });
     }
 
@@ -256,17 +276,29 @@ public class HelloController {
         setupEscapeExit(gameBoard.getScene(), this::navigateToTitle);
     }
 
-    private void setupEscapeExit(javafx.scene.Scene scene, Runnable onExit) {
+    private void setupEscapeExit(Scene scene, Runnable onExit) {
         if (scene == null) return;
-        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(3), e -> onExit.run()));
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.ESCAPE && tl.getStatus() != Animation.Status.RUNNING) {
-                tl.playFromStart();
+
+        // 1. If a timer already exists, stop it before making a new one
+        if (escapeTimeline != null) {
+            escapeTimeline.stop();
+        }
+
+        // 2. Define the timer
+        escapeTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+            onExit.run();
+        }));
+
+        // 3. Use setOnKey... (this replaces any existing escape listeners)
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE && escapeTimeline.getStatus() != Animation.Status.RUNNING) {
+                escapeTimeline.playFromStart();
             }
         });
-        scene.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
+
+        scene.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
-                tl.stop();
+                escapeTimeline.stop();
             }
         });
     }
@@ -393,6 +425,44 @@ public class HelloController {
             scheduleBotMove("X");
         }
     }
+
+    private void handleDevModeCode(KeyEvent event) {
+        //exit dev mode here
+        if (event.getCode() == KeyCode.LEFT) {
+            if (showStratDM != null && showStratDM.isVisible()) {
+                showStratDM.setVisible(false);
+                showStratDM.setManaged(false);
+
+                devModeLabel.setVisible(false);
+                devModeLabel.setManaged(false);
+            }
+            codeIndex = 0;
+            return;
+        }
+
+        if (event.getCode() == SECRET_CODE.get(codeIndex)) {
+            codeIndex++;
+            if (codeIndex == SECRET_CODE.size()) {
+                if (showStratDM != null) {
+                    showStratDM.setVisible(true);
+                    showStratDM.setManaged(true);
+                    showStratDM.setText("Show strategy");
+                    devModeLabel.setText("Development Mode");
+                    devModeLabel.setVisible(true);
+                    devModeLabel.setManaged(true);
+                }
+                codeIndex = 0;
+            }
+        } else {
+            // Only reset if they press a key that isn't the start of the code
+            if (event.getCode() == SECRET_CODE.get(0)) {
+                codeIndex = 1;
+            } else {
+                codeIndex = 0;
+            }
+        }
+    }
+
 
 
 } // end of class
