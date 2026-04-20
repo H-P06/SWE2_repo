@@ -35,6 +35,7 @@ public class HelloController {
 
 
     @FXML private Button showStratDM;
+    private boolean strategyVisible = false;
     private final List<Button> winPathHighlights = new ArrayList<>();
     private final List<String> savedWinPathStyles = new ArrayList<>();
     private int[] scheduledBotMove = null;
@@ -265,7 +266,7 @@ public class HelloController {
         if (move == null) return;
 
         scheduledBotMove = move;
-        if (devModeLabel != null && devModeLabel.isVisible()) {
+        if (devModeLabel != null && devModeLabel.isVisible() && strategyVisible) {
             showBotWinPath();
         }
 
@@ -278,7 +279,7 @@ public class HelloController {
             if (btn != null) {
                 handleMove(move[0], move[1], btn);
             }
-            if (!gameOver && devModeLabel != null && devModeLabel.isVisible()) {
+            if (!gameOver && devModeLabel != null && devModeLabel.isVisible() && strategyVisible) {
                 showBotWinPath();
             }
         });
@@ -450,6 +451,8 @@ public class HelloController {
             if (showStratDM != null && showStratDM.isVisible()) {
                 showStratDM.setVisible(false);
                 showStratDM.setManaged(false);
+                showStratDM.setText("Show strategy");
+                strategyVisible = false;
                 devModeLabel.setVisible(false);
                 devModeLabel.setManaged(false);
                 clearWinPathHighlights();
@@ -461,7 +464,18 @@ public class HelloController {
         if (event.getCode() == SECRET_CODE.get(codeIndex)) {
             codeIndex++;
             if (codeIndex == SECRET_CODE.size()) {
-                if (showStratDM != null) {
+                boolean devActive = devModeLabel != null && devModeLabel.isVisible();
+                if (devActive) {
+                    if (showStratDM != null) {
+                        showStratDM.setVisible(false);
+                        showStratDM.setManaged(false);
+                        showStratDM.setText("Show strategy");
+                    }
+                    strategyVisible = false;
+                    devModeLabel.setVisible(false);
+                    devModeLabel.setManaged(false);
+                    clearWinPathHighlights();
+                } else if (showStratDM != null) {
                     showStratDM.setVisible(true);
                     showStratDM.setManaged(true);
                     showStratDM.setText("Show strategy");
@@ -485,7 +499,17 @@ public class HelloController {
 
     private void setupShowStratButton() {
         if (showStratDM == null) return;
-        showStratDM.setOnAction(e -> showBotWinPath());
+        showStratDM.setOnAction(e -> {
+            if (strategyVisible) {
+                clearWinPathHighlights();
+                strategyVisible = false;
+                showStratDM.setText("Show strategy");
+            } else {
+                strategyVisible = true;
+                showBotWinPath();
+                showStratDM.setText("Hide strategy");
+            }
+        });
     }
 
     private void showBotWinPath() {
