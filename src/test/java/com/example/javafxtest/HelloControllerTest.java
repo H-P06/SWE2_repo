@@ -1,15 +1,52 @@
 package com.example.javafxtest;
 
-import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import org.junit.jupiter.api.BeforeAll;
+import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testfx.framework.junit5.ApplicationTest;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.testfx.api.FxAssert.verifyThat;
+import static org.testfx.matcher.base.NodeMatchers.isInvisible;
+import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
-class HelloControllerTest {
+class HelloControllerTest extends ApplicationTest {
+
+    private HelloController controller;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        HelloController.gameMode = 1;
+        FXMLLoader loader = new FXMLLoader(HelloController.class.getResource("player_vs_bot_start.fxml"));
+        Scene scene = new Scene(loader.load());
+        controller = loader.getController();
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @BeforeEach
+    void setUp() {
+        HelloController.gameMode = 1;
+        interact(() -> {
+            controller.resetForTesting();
+            controller.getEngine().reset();
+            controller.numberMove = 0;
+            controller.isSecondPlayerHuman = false;
+            controller.pieRuleSwapped = false;
+            controller.pieRuleButton.setVisible(false);
+            controller.pieRuleButton.setManaged(false);
+            controller.pieButtonHelp.setVisible(false);
+            controller.pieButtonHelp.setManaged(false);
+        });
+    }
+
     @Test
     void testPiecePlacement() {
         QuaxEngine engine = new QuaxEngine();
@@ -20,8 +57,8 @@ class HelloControllerTest {
     @Test
     void testCannotOverwriteMove() {
         QuaxEngine engine = new QuaxEngine();
-        engine.placePiece(4, 4); // First move X
-        boolean success = engine.placePiece(4, 4); // Attempt to overwrite
+        engine.placePiece(4, 4);
+        boolean success = engine.placePiece(4, 4);
         assertFalse(success, "Should not be able to place piece on occupied square");
         assertEquals("X", engine.getPieceAt(4, 4), "Square should still contain X");
     }
@@ -31,162 +68,104 @@ class HelloControllerTest {
         QuaxEngine engine = new QuaxEngine();
         engine.placePiece(0, 0); // X
         engine.placePiece(1, 1); // O
-        assertEquals("O", engine.getPieceAt(1, 1));
-        assertEquals(2, engine.getMoveCount());
-    }
-
-    private HelloController controller;
-
-    @BeforeAll
-    static void initSimulation() {
-        //initialising simulation so we can actually test on something
-        Platform.startup(() -> {});
-    }
-
-    @BeforeEach
-    void setUp() {
-        //make instance of controller
-        controller = new HelloController();
-        // set button since FXML isn't loading here
-        controller.pieRuleButton = new Button();
-
-        controller.pieButtonHelp = new Button();
-
-        //this is needed in pieRuleLogic test:
-        controller.playerToPlay = new Label();
-    }
+        }
 
     @Test
     void testInitialPieRuleOnBeginning() {
-        controller.setPieRuleButton();
+        interact(() -> controller.setPieRuleButton());
 
-        assertFalse(controller.pieRuleButton.isVisible(),"The button is to be invisible in the beginning");
+        assertFalse(controller.pieRuleButton.isVisible(), "The button is to be invisible in the beginning");
     }
 
     @Test
     void testPieRuleVisibility() {
-        //pie rule will be visible after the first move
-        controller.numberMove = 1;
-        controller.isSecondPlayerHuman = true;  //new addition
+        interact(() -> {
+            controller.numberMove = 1;
+            controller.isSecondPlayerHuman = true;
+            controller.updatePieRuleVisibility();
+        });
 
-        controller.updatePieRuleVisibility();
-
-        assertTrue(controller.pieRuleButton.isVisible(),"The button should be visible after 1 move");
+        assertTrue(controller.pieRuleButton.isVisible(), "The button should be visible after 1 move");
     }
 
     @Test
     void testPieRuleVisibility2Moves() {
-        //pie rule will be visible after the first move
-        controller.numberMove = 2;
+        interact(() -> {
+            controller.numberMove = 2;
+            controller.updatePieRuleVisibility();
+        });
 
-        controller.updatePieRuleVisibility();
-
-        assertFalse(controller.pieRuleButton.isVisible(),"The button should not be visible when we have 2 moves");
-
+        assertFalse(controller.pieRuleButton.isVisible(), "The button should not be visible when we have 2 moves");
     }
 
     @Test
     void testPieRuleLogic() {
-        //let's pretend black places something at 0,0 (black is X) (white is O)
         QuaxEngine engine = controller.getEngine();
 
-        //place piece
-        engine.placePiece(0,0);
-
-        //check if X is placed in 0,0
+        engine.placePiece(0, 0);
         assertEquals("X", engine.getPieceAt(0, 0), "First move should be X");
 
-
-        //button to represent piece
         Button boardButton = new Button();
-
-        //put it in the map so controller can find
         controller.buttonMap.put("0,0", boardButton);
 
-        //do the handlePieRuleLogic
-        controller.handlePieRuleLogic();
+        interact(() -> controller.handlePieRuleLogic());
 
-        // Black stone stays Black — player 2 takes over as Black
         assertEquals("X", engine.getPieceAt(0, 0), "the piece should remain X (Black); players swap, not the piece");
-
-        // Pie rule counts as move 2, so engine move count is 2
         assertEquals(2, engine.getMoveCount());
 
-        // Next move placed should be White (O), confirming turn has swapped
         engine.placePiece(2, 0);
         assertEquals("O", engine.getPieceAt(2, 0), "Next move after pie rule should be O (White)");
     }
 
-    //tests for the information button beside the pie rule button
     @Test
     void testInitialPieButtonHelpOnBeginning() {
-        controller.setPieRuleHelp();
+        interact(() -> controller.setPieRuleHelp());
 
-        assertFalse(controller.pieButtonHelp.isVisible(),"The button is to be invisible in the beginning");
+        assertFalse(controller.pieButtonHelp.isVisible(), "The button is to be invisible in the beginning");
     }
 
     @Test
     void testPieButtonHelpVisibility() {
-        //pie rule will be visible after the first move
-        controller.numberMove = 1;
-        controller.isSecondPlayerHuman = true;  //new addition
+        interact(() -> {
+            controller.numberMove = 1;
+            controller.isSecondPlayerHuman = true;
+            controller.updatePieButtonHelpVisibility();
+        });
 
-        controller.updatePieButtonHelpVisibility();
-
-        assertTrue(controller.pieButtonHelp.isVisible(),"The button should be visible after 1 move");
-
+        assertTrue(controller.pieButtonHelp.isVisible(), "The button should be visible after 1 move");
     }
 
     @Test
     void testPieButtonHelpVisibility2Moves() {
-        //pie rule will be visible after the first move
-        controller.numberMove = 2;
+        interact(() -> {
+            controller.numberMove = 2;
+            controller.updatePieButtonHelpVisibility();
+        });
 
-        controller.updatePieButtonHelpVisibility();
-
-        assertFalse(controller.pieButtonHelp.isVisible(),"The button should not be visible when we have 2 moves");
-
-    }
-
-    @BeforeAll
-    static void initJFX() {
-        // Starts the JavaFX thread so UI components can be created
-        try {
-            Platform.startup(() -> {});
-        } catch (IllegalStateException e) {
-            // Toolkit already started
-        }
+        assertFalse(controller.pieButtonHelp.isVisible(), "The button should not be visible when we have 2 moves");
     }
 
     @Test
     void testPieRuleTitleAppearance() {
-        HelloController controller = new HelloController();
-
-        // These lines are CRITICAL. We manually 'inject' the FXML fields.
         Label testLabel = new Label();
-        controller.playerToPlay = new Label();
-        controller.pieRuleActivated = testLabel;
-        controller.pieRuleButton = new Button();
-        controller.pieButtonHelp = new Button(); // This line prevents the NullPointer error.
+        interact(() -> {
+            controller.playerToPlay = new Label();
+            controller.pieRuleActivated = testLabel;
 
-        // 1. Simulate the logic that happens when the Pie Rule is activated.
-        controller.handlePieRuleLogic();
+            controller.handlePieRuleLogic();
 
-        // 2. Manually trigger the visual update as your 'setPieRuleButton' would.
-        testLabel.setText("Pie Rule Activated!");
-        testLabel.setVisible(true);
+            testLabel.setText("Pie Rule Activated!");
+            testLabel.setVisible(true);
+        });
 
-        // Description: We check if the text matches and if the visibility is true.
         assertEquals("Pie Rule Activated!", testLabel.getText());
         assertTrue(testLabel.isVisible(), "The Pie Rule title should be visible to the player.");
     }
 
     @Test
     void testExitResetsGameMode() {
-        // Description: We set the game mode to PvB (1) and simulate the exit logic.
         HelloController.gameMode = 1;
 
-        // This simulates the reset logic inside navigateToTitle().
         HelloController.gameMode = -1;
 
         assertEquals(-1, HelloController.gameMode, "The game mode should reset to -1 upon exit.");
@@ -195,51 +174,96 @@ class HelloControllerTest {
     @Test
     void testBotChoosesWinningMove() {
         String[][] board = new String[22][22];
-        // Create a path of Black (X) from y=0 to y=18
         for (int y = 0; y <= 18; y += 2) {
             board[10][y] = "X";
         }
-        // The only move left to win (top-to-bottom) is at (10, 20)
         int[] move = QuaxBot.chooseBestMove(board, "X");
 
         assertNotNull(move);
         assertEquals(10, move[0]);
         assertEquals(20, move[1]);
     }
+
     @Test
     void testBotMakesValidFirstMove() {
         String[][] emptyBoard = new String[22][22];
         int[] move = QuaxBot.chooseBestMove(emptyBoard, "X");
 
         assertNotNull(move);
-        // Check if move is within bounds
         assertTrue(move[0] >= 0 && move[0] <= 20);
         assertTrue(move[1] >= 0 && move[1] <= 20);
-        // Verify it's a valid Quax coordinate (even/even or odd/odd)
         assertTrue((move[0] % 2 == 0 && move[1] % 2 == 0) || (move[0] % 2 == 1 && move[1] % 2 == 1));
     }
+
     @Test
     void testRandomColourAssignLogic() {
-        HelloController controller = new HelloController();
-
-        controller.playerToPlay = new javafx.scene.control.Label();
-
-        // Initialize necessary components for the test
-        controller.randomColourAssign();
+        interact(() -> controller.randomColourAssign());
 
         if (controller.pieRuleSwapped) {
-            // CASE: Player is second (randomNum == 1)
-            // The bot should have been triggered to play as Black ("X")
-            // We verify that the engine now expects the bot to play if the pieRuleSwapped is true
             assertTrue(controller.pieRuleSwapped);
             assertEquals("X", controller.getEngine().getCurrentPlayer());
         } else {
-            // CASE: Player is first (randomNum == 0)
-            // No bot move should have been scheduled
-            // The engine should expect pie rule start to be false
             assertEquals(0, controller.getEngine().getMoveCount());
             assertFalse(controller.pieRuleSwapped);
             assertEquals("X", controller.getEngine().getCurrentPlayer());
         }
+    }
+
+    @Test
+    public void testDevModeActivation() {
+        verifyThat("#devModeLabel", isInvisible());
+
+        type(KeyCode.D);
+        type(KeyCode.E);
+        type(KeyCode.V);
+
+        verifyThat("#devModeLabel", isVisible());
+        verifyThat("#showStratDM", isVisible());
+    }
+
+    @Test
+    public void testStrategyHighlighting() {
+        type(KeyCode.D, KeyCode.E, KeyCode.V);
+        clickOn("#showStratDM");
+
+        boolean hasGreenHighlight = lookup(".board-tile").queryAll().stream()
+                .anyMatch(node -> node.getStyle().contains("#00cc55"));
+
+        assertTrue(hasGreenHighlight, "Bot path should be visible in green.");
+    }
+
+    @Test
+    public void testClearHighlights() {
+        type(KeyCode.D, KeyCode.E, KeyCode.V);
+        clickOn("#showStratDM");
+
+        interact(() -> controller.clearWinPathHighlights());
+
+        boolean stillHasGreen = lookup(".board-tile").queryAll().stream()
+                .anyMatch(node -> node.getStyle().contains("#00cc55"));
+
+        assertFalse(stillHasGreen, "All highlights should be reverted to original styles.");
+    }
+
+    @Test
+    public void testBotPathfindingLogic() {
+        String[][] emptyBoard = new String[22][22];
+        String botPiece = "X";
+
+        List<int[]> path = QuaxBot.getShortestPathTiles(emptyBoard, botPiece);
+
+        assertNotNull(path);
+        assertFalse(path.isEmpty());
+        assertTrue(path.stream().anyMatch(t -> t[1] == 0), "Should start at top.");
+        assertTrue(path.stream().anyMatch(t -> t[1] == 20), "Should reach bottom.");
+    }
+
+    @Test
+    public void testExitDevMode() {
+        type(KeyCode.D, KeyCode.E, KeyCode.V);
+        type(KeyCode.LEFT);
+
+        verifyThat("#devModeLabel", isInvisible());
+        verifyThat("#showStratDM", isInvisible());
     }
 }

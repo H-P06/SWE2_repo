@@ -39,6 +39,7 @@ public class HelloController {
     private final List<Button> winPathHighlights = new ArrayList<>();
     private final List<String> savedWinPathStyles = new ArrayList<>();
     private int[] scheduledBotMove = null;
+    private PauseTransition botDelay = null;
 
     //THE CODE TO TURN ON DEV MODE
     private final List<KeyCode> SECRET_CODE = List.of(KeyCode.D, KeyCode.E, KeyCode.V);
@@ -270,9 +271,11 @@ public class HelloController {
             showBotWinPath();
         }
 
-        PauseTransition delay = new PauseTransition(Duration.millis(400));
-        delay.setOnFinished(e -> {
+        if (botDelay != null) botDelay.stop();
+        botDelay = new PauseTransition(Duration.millis(400));
+        botDelay.setOnFinished(e -> {
             if (gameOver) return;
+            botDelay = null;
             scheduledBotMove = null;
             clearWinPathHighlights();
             Button btn = buttonMap.get(move[0] + "," + move[1]);
@@ -283,7 +286,7 @@ public class HelloController {
                 showBotWinPath();
             }
         });
-        delay.play();
+        botDelay.play();
     }
 
     private void setupKeyHandlers() {
@@ -533,12 +536,32 @@ public class HelloController {
         }
     }
 
-    private void clearWinPathHighlights() {
+    void clearWinPathHighlights() {
         for (int i = 0; i < winPathHighlights.size(); i++) {
             winPathHighlights.get(i).setStyle(savedWinPathStyles.get(i));
         }
         winPathHighlights.clear();
         savedWinPathStyles.clear();
+    }
+
+    void resetForTesting() {
+        if (botDelay != null) {
+            botDelay.stop();
+            botDelay = null;
+        }
+        scheduledBotMove = null;
+        strategyVisible = false;
+        codeIndex = 0;
+        clearWinPathHighlights();
+        if (devModeLabel != null) {
+            devModeLabel.setVisible(false);
+            devModeLabel.setManaged(false);
+        }
+        if (showStratDM != null) {
+            showStratDM.setVisible(false);
+            showStratDM.setManaged(false);
+            showStratDM.setText("Show strategy");
+        }
     }
 
 } // end of class
