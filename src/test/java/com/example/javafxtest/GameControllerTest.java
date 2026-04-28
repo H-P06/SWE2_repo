@@ -250,7 +250,7 @@ class GameControllerTest extends ApplicationTest {
         String[][] emptyBoard = new String[22][22];
         String botPiece = "X";
 
-        List<int[]> path = QuaxBot.getShortestPathTiles(emptyBoard, botPiece);
+        List<int[]> path = QuaxPathFinder.getShortestPathTiles(emptyBoard, botPiece);
 
         assertNotNull(path);
         assertFalse(path.isEmpty());
