@@ -8,7 +8,7 @@
 
 <!--for aligning and fitting to window, alignment without exact coordinates-->
 <VBox fx:id="titleRoot" alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.javafxtest.HelloController" stylesheets="@style.css">
+      fx:controller="com.example.javafxtest.TitleController" stylesheets="@style.css">
 
 <!--    so it doesn't touch the edges-->
     <padding>

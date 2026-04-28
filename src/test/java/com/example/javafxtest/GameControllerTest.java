@@ -17,14 +17,14 @@ import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isInvisible;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
-class HelloControllerTest extends ApplicationTest {
+class GameControllerTest extends ApplicationTest {
 
-    private HelloController controller;
+    private GameController controller;
 
     @Override
     public void start(Stage stage) throws Exception {
-        HelloController.gameMode = 1;
-        FXMLLoader loader = new FXMLLoader(HelloController.class.getResource("player_vs_bot_start.fxml"));
+        GameController.gameMode = 1;
+        FXMLLoader loader = new FXMLLoader(GameController.class.getResource("player_vs_bot_start.fxml"));
         Scene scene = new Scene(loader.load());
         controller = loader.getController();
         stage.setScene(scene);
@@ -33,7 +33,7 @@ class HelloControllerTest extends ApplicationTest {
 
     @BeforeEach
     void setUp() {
-        HelloController.gameMode = 1;
+        GameController.gameMode = 1;
         interact(() -> {
             controller.resetForTesting();
             controller.getEngine().reset();
@@ -68,7 +68,7 @@ class HelloControllerTest extends ApplicationTest {
         QuaxEngine engine = new QuaxEngine();
         engine.placePiece(0, 0); // X
         engine.placePiece(1, 1); // O
-        }
+    }
 
     @Test
     void testInitialPieRuleOnBeginning() {
@@ -164,11 +164,11 @@ class HelloControllerTest extends ApplicationTest {
 
     @Test
     void testExitResetsGameMode() {
-        HelloController.gameMode = 1;
+        GameController.gameMode = 1;
 
-        HelloController.gameMode = -1;
+        GameController.gameMode = -1;
 
-        assertEquals(-1, HelloController.gameMode, "The game mode should reset to -1 upon exit.");
+        assertEquals(-1, GameController.gameMode, "The game mode should reset to -1 upon exit.");
     }
 
     @Test
