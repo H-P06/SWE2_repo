@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-// JavaFX entry point — loads the title screen on startup.
 public class QuaxApplication extends Application {
 
     @Override

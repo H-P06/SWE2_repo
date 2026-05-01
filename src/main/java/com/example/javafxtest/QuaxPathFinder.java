@@ -3,14 +3,12 @@ package com.example.javafxtest;
 import java.util.*;
 
 // Dijkstra-based pathfinding on the octagon-diamond Quax board.
-// Black (X) wins top-to-bottom (y=0 → y=20); White (O) wins left-to-right (x=0 → x=20).
 public class QuaxPathFinder {
 
     static final int[][] OCT_NEIGHBORS     = {{2,0},{-2,0},{0,2},{0,-2},{1,1},{1,-1},{-1,1},{-1,-1}};
     static final int[][] DIAMOND_NEIGHBORS = {{1,1},{1,-1},{-1,1},{-1,-1}};
     static final int INF = Integer.MAX_VALUE / 2;
 
-    // Returns true for valid playable positions: octagon (even,even) or diamond (odd,odd).
     static boolean isValid(int x, int y) {
         return x >= 0 && x <= 20 && y >= 0 && y <= 20
                 && ((x % 2 == 0 && y % 2 == 0) || (x % 2 == 1 && y % 2 == 1));
@@ -25,7 +23,6 @@ public class QuaxPathFinder {
         return cells;
     }
 
-    // Returns a copy of the board with board[px][py] set to player.
     public static String[][] withPiece(String[][] board, int px, int py, String player) {
         String[][] copy = new String[22][22];
         for (int i = 0; i < 22; i++) copy[i] = board[i].clone();
@@ -33,11 +30,6 @@ public class QuaxPathFinder {
         return copy;
     }
 
-    /*
-     * Dijkstra cost for player on the given board.
-     * Cost model: own piece = 0, empty = 1, opponent = blocked.
-     * Returns 0 if already connected, INF if impossible.
-     */
     static int shortestPath(String[][] board, String player) {
         boolean topToBottom = player.equals("X");
         String  opponent    = player.equals("X") ? "O" : "X";
@@ -73,7 +65,7 @@ public class QuaxPathFinder {
     }
 
     /*
-     * Returns the tiles on the shortest winning path (owned tiles cost 0, empty cost 1).
+     * Returns the tiles on the shortest winning path
      * Returns an empty list if no path exists.
      */
     public static List<int[]> getShortestPathTiles(String[][] board, String player) {

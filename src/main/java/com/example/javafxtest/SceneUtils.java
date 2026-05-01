@@ -11,7 +11,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Objects;
 
-// Static utilities for scene setup: escape-hold handling and FXML scene loading.
+// for scene setup: escape-hold handling and FXML scene loading.
 class SceneUtils {
 
     // Sets up a 3-second ESC hold to trigger onExit — prevents accidental exits.

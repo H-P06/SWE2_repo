@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-// Controller for the title screen — handles navigation to game modes and ESC to exit.
+// Controller for the title screen
 public class TitleController {
 
     @FXML private VBox titleRoot;

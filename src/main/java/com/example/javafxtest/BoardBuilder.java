@@ -7,7 +7,6 @@ import javafx.scene.layout.*;
 
 import java.util.Map;
 
-// Builds the visual game board grid — column/row constraints, tile buttons, and border styling.
 public class BoardBuilder {
 
     @FunctionalInterface
@@ -15,11 +14,9 @@ public class BoardBuilder {
         void onClick(int x, int y, Button tile);
     }
 
-    // Populates gameBoard with octagon and diamond tile buttons, registering each in buttonMap.
     public static void build(GridPane board, StackPane sizeRef,
                              Map<String, Button> buttonMap,
                              TileClickHandler onClick) {
-        // Narrow odd columns/rows act as visual spacers between tiles
         for (int col = 0; col < 21; col++) {
             ColumnConstraints cc = new ColumnConstraints();
             if (col % 2 == 1) { cc.setPrefWidth(3); cc.setMaxWidth(3); }
@@ -54,7 +51,7 @@ public class BoardBuilder {
             GridPane.setValignment(btn, VPos.CENTER);
         }
 
-        // Corner and edge tiles get coloured borders to mark the board perimeter
+        // Corner and edge marked
         if      (x == 0  && y == 0)  btn.setStyle("-fx-background-color: #000000, #ffffff, #725242; -fx-background-insets: 0, 3 0 0 0, 3 0 0 3;");
         else if (x == 20 && y == 0)  btn.setStyle("-fx-background-color: #000000, #ffffff, #725242; -fx-background-insets: 0, 3 0 0 0, 3 3 0 0;");
         else if (x == 0  && y == 20) btn.setStyle("-fx-background-color: #000000, #ffffff, #725242; -fx-background-insets: 0, 0 0 3 0, 0 0 3 3;");
@@ -69,7 +66,6 @@ public class BoardBuilder {
         buttonMap.put(x + "," + y, btn);
     }
 
-    // Binds a button's size to a fraction of the board height so tiles scale with the window.
     private static void bindSize(Button btn, StackPane sizeRef, double divisor) {
         btn.prefWidthProperty().bind(sizeRef.heightProperty().divide(divisor));
         btn.prefHeightProperty().bind(sizeRef.heightProperty().divide(divisor));

@@ -9,7 +9,6 @@ import javafx.util.Duration;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
-// Manages the pie rule UI: button wiring, help dialog, and visibility logic.
 class PieRuleHandler {
 
     private final Button pieRuleButton;
@@ -27,7 +26,6 @@ class PieRuleHandler {
         this.isSecondPlayerHuman = isSecondPlayerHuman;
     }
 
-    // Hides both buttons and wires their actions. onActivate runs when the player swaps sides.
     void setup(Runnable onActivate) {
         pieRuleButton.setVisible(false);
         pieRuleButton.setManaged(false);

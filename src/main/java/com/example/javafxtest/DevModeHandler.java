@@ -10,8 +10,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-// Manages the dev mode feature: D-E-V key sequence, strategy path display, and tile highlights.
-// Game state is read via suppliers so this class doesn't hold a reference back to the controller.
+// secret code to activate dev mode: dev
 class DevModeHandler {
 
     private static final List<KeyCode> SECRET_CODE = List.of(KeyCode.D, KeyCode.E, KeyCode.V);
@@ -21,7 +20,6 @@ class DevModeHandler {
     private final Map<String, Button> buttonMap;
     private final QuaxEngine engine;
 
-    // Suppliers read controller state at call time rather than capturing a snapshot
     private final BooleanSupplier isGameOver;
     private final Supplier<int[]> getScheduledMove;
     private final BooleanSupplier isSecondPlayerHuman;
@@ -46,7 +44,6 @@ class DevModeHandler {
         this.isPieRuleSwapped   = isPieRuleSwapped;
     }
 
-    // Wires the "Show/Hide strategy" button action.
     void setupStratButton() {
         if (showStratDM == null) return;
         showStratDM.setOnAction(e -> {
@@ -62,7 +59,6 @@ class DevModeHandler {
         });
     }
 
-    // Listens for the D-E-V key sequence to toggle dev mode; LEFT arrow exits dev mode.
     void handleKeyEvent(KeyEvent event) {
         if (event.getCode() == KeyCode.LEFT) {
             setVisible(false);
@@ -81,10 +77,11 @@ class DevModeHandler {
         }
     }
 
-    // Highlights the bot's current shortest winning path in green.
     void showBotWinPath() {
         clearHighlights();
-        if (isGameOver.getAsBoolean() || GameController.gameMode != 1) return;
+        if (isGameOver.getAsBoolean() || GameController.gameMode != 1) {
+            return;
+        }
 
         boolean secondHuman = isSecondPlayerHuman.getAsBoolean();
         boolean swapped     = isPieRuleSwapped.getAsBoolean();
@@ -136,7 +133,11 @@ class DevModeHandler {
         showStratDM.setVisible(visible);
         showStratDM.setManaged(visible);
         showStratDM.setText("Show strategy");
-        if (visible) devModeLabel.setText("Development Mode");
-        else { strategyVisible = false; clearHighlights(); }
+        if (visible){
+            devModeLabel.setText("Development Mode");
+        }
+        else{
+            strategyVisible = false; clearHighlights();
+        }
     }
 }

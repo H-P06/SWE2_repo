@@ -16,7 +16,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-// Controller for the game board — coordinates moves, bot, pie rule, and dev mode.
+/**
+ * Main controller for game
+ * manages board, turns, pie rule and win detection.
+ */
+
 public class GameController {
 
     public static int gameMode = -1; // 1=PvB, 2=PvP, -1=none
@@ -114,7 +118,6 @@ public class GameController {
         }
     }
 
-    // Delays the bot's move by 400 ms so it doesn't feel instant.
     private void scheduleBotMove(String botPiece) {
         int[] move = QuaxBot.chooseBestMove(engine.getBoardCopy(), botPiece);
         if (move == null) return;

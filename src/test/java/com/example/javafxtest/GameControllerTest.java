@@ -223,6 +223,7 @@ class GameControllerTest extends ApplicationTest {
 
     @Test
     public void testStrategyHighlighting() {
+        GameController.gameMode = 1;
         type(KeyCode.D, KeyCode.E, KeyCode.V);
         clickOn("#showStratDM");
 
